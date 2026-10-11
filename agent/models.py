@@ -215,6 +215,7 @@ class TurnTrace:
     action: Action
     answer: str
     provenance_notes: tuple[str, ...] = ()
+    evidence_ledger: tuple[dict[str, Any], ...] = ()
 
     @property
     def evidence_ids(self) -> list[str]:

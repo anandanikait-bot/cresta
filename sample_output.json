@@ -36,6 +36,7 @@
               "line_end": 42,
               "line_start": 24,
               "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
               "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
             },
             {
@@ -44,6 +45,7 @@
               "line_end": 52,
               "line_start": 38,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
               "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
             }
           ],
@@ -64,6 +66,7 @@
               "line_end": 42,
               "line_start": 24,
               "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
               "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
             },
             {
@@ -72,6 +75,7 @@
               "line_end": 52,
               "line_start": 38,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
               "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
             },
             {
@@ -80,6 +84,7 @@
               "line_end": 18,
               "line_start": 18,
               "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "source_text": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
               "title": "Transcript 14:06 Customer"
             },
             {
@@ -88,6 +93,7 @@
               "line_end": 20,
               "line_start": 20,
               "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "source_text": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
               "title": "Transcript 14:08 Agent"
             }
           ],
@@ -116,6 +122,7 @@
               "line_end": 55,
               "line_start": 43,
               "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "source_text": "## Rule 4 — Escalation & Approval Thresholds\n\nEscalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply:\n\n- a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**.\n- b. A **Service-Outage Credit** calculated under Rule 3 exceeds **$300.00**, or the underlying outage exceeds **30 consecutive days**, or the NOC ticket number cannot be verified at the time of the request.\n- c. The customer has filed a second billing dispute on the same account within **90 days** of a prior resolved dispute (repeat dispute), regardless of dollar amount.\n- d. Suspected fraud indicators are present (e.g., disputed charges tied to a device or SIM not registered on the account, or a pattern of disputes across unrelated accounts from the same contact method).\n\n**Note on applying (a) and (b) together:** a Service-Outage Credit that exceeds $75.00 does **not**, by itself, trigger escalation under (a) — (a) applies only to general Rule 2 credits. A Service-Outage Credit only needs escalation if it independently meets condition (b). Agents should confirm which rule (2 or 3) governs the request *before* checking which escalation condition, if any, applies — checking the $75.00 threshold against a Service-Outage Credit is a misapplication of this rule.\n\n---",
               "title": "Rule 4 — Escalation & Approval Thresholds"
             },
             {
@@ -124,6 +131,7 @@
               "line_end": 58,
               "line_start": 56,
               "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "source_text": "## Rule 5 — Repeat Dispute & Fraud Review\n\nRegardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-line agent, even if the dollar amount is small. Front-line agents may continue to gather information and communicate status but may not issue the credit themselves in these cases.",
               "title": "Rule 5 — Repeat Dispute & Fraud Review"
             },
             {
@@ -132,6 +140,7 @@
               "line_end": 78,
               "line_start": 65,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1006 — When We Escalate a Billing Request to Tier 2\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nFront-line agents escalate a billing request to a Tier 2 Billing Specialist when:\n\n- A general goodwill credit (KB-1002) would push the account's rolling 12-month total above $75.00.\n- A Service-Outage Credit (KB-1004) exceeds $300.00, the outage exceeds 30 consecutive days, or the NOC ticket can't be verified.\n- The same account has a second dispute within 90 days of a prior resolved dispute.\n- Anything about the request looks like possible fraud.\n\nA Service-Outage Credit above $75.00 does **not** by itself require escalation — the $75.00 figure is specific to general goodwill credits under KB-1002, not to outage credits. Check KB-1004/KB-1005's own thresholds for outage credits instead.\n\n---",
               "title": "KB-1006 — When We Escalate a Billing Request to Tier 2"
             },
             {
@@ -140,6 +149,7 @@
               "line_end": 85,
               "line_start": 79,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1007 — Repeat Disputes & Fraud Review\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nIf an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in question is small. The same applies if fraud indicators are present, such as a disputed charge tied to a SIM or device not registered on the account. Front-line agents should gather details and set expectations with the customer but should not issue a credit themselves in these cases.\n\n---",
               "title": "KB-1007 — Repeat Disputes & Fraud Review"
             }
           ],
@@ -192,6 +202,347 @@
         "RULE-5",
         "KB-1006",
         "KB-1007"
+      ],
+      "evidence_ledger": [
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1002 — Refund Eligibility & Goodwill Credit Limits **Category:** Refund Eligibility · **Last updated:** August 5, 2026 Confirmed billing errors (duplicate charges, incorrect proration, mis-applied promo codes, incorrectly billed add-ons) are eligible for a goodwill refund or account credit o…",
+          "line_end": 30,
+          "line_start": 22,
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "KB-1002",
+          "rank": 1,
+          "reason": "lexical: limit, refund; topic aliases: goodwill",
+          "score": 5.0226,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1002 — Refund Eligibility & Goodwill Credit Limits\n**Category:** Refund Eligibility · **Last updated:** August 5, 2026\n\nConfirmed billing errors (duplicate charges, incorrect proration, mis-applied promo codes, incorrectly billed add-ons) are eligible for a goodwill refund or account credit of **up to $75.00 per account per rolling 12-month period**. This is a cumulative ceiling across the trailing 12 months, not a per-dispute allowance — check the account's credit history before quoting an amount. Requests that would exceed the cumulative $75.00 limit require Tier 2 Billing Specialist approval; do not promise an amount above $75.00 without that approval.\n\nThis article covers **general** billing errors only. Charges related to a confirmed service outage are handled under a separate policy — see KB-1004.\n\n---",
+          "status": "found",
+          "title": "KB-1002 — Refund Eligibility & Goodwill Credit Limits",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "## Rule 2 — General Refund / Goodwill Credit Limit For billing errors confirmed by the agent (e.g., duplicate charges, incorrect proration, mis-applied promotions, mis-billed add-ons) that do **not** fall under a more specific policy in this document, NimbusCare agents may issue a goodwill refund o…",
+          "line_end": 23,
+          "line_start": 16,
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "RULE-2",
+          "rank": 2,
+          "reason": "lexical: limit, refund; topic aliases: goodwill",
+          "score": 5.0226,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 2 — General Refund / Goodwill Credit Limit\n\nFor billing errors confirmed by the agent (e.g., duplicate charges, incorrect proration, mis-applied promotions, mis-billed add-ons) that do **not** fall under a more specific policy in this document, NimbusCare agents may issue a goodwill refund or account credit of **up to $75.00 per account, per rolling 12-month period**, without further approval. This $75.00 ceiling is cumulative across all general goodwill credits issued to the account in the trailing 12 months, not a per-incident allowance.\n\nAny general goodwill refund or credit that would bring the account's rolling 12-month total **above $75.00** requires Tier 2 Billing Specialist approval under Rule 4 before it is issued.\n\n---",
+          "status": "found",
+          "title": "Rule 2 — General Refund / Goodwill Credit Limit",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1006 — When We Escalate a Billing Request to Tier 2 **Category:** Escalation Rules · **Last updated:** August 20, 2026 Front-line agents escalate a billing request to a Tier 2 Billing Specialist when: - A general goodwill credit (KB-1002) would push the account's rolling 12-month total above…",
+          "line_end": 78,
+          "line_start": 65,
+          "matched_terms": [
+            "like"
+          ],
+          "passage_id": "KB-1006",
+          "rank": 3,
+          "reason": "lexical: like; topic aliases: goodwill",
+          "score": 4.3294,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1006 — When We Escalate a Billing Request to Tier 2\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nFront-line agents escalate a billing request to a Tier 2 Billing Specialist when:\n\n- A general goodwill credit (KB-1002) would push the account's rolling 12-month total above $75.00.\n- A Service-Outage Credit (KB-1004) exceeds $300.00, the outage exceeds 30 consecutive days, or the NOC ticket can't be verified.\n- The same account has a second dispute within 90 days of a prior resolved dispute.\n- Anything about the request looks like possible fraud.\n\nA Service-Outage Credit above $75.00 does **not** by itself require escalation — the $75.00 figure is specific to general goodwill credits under KB-1002, not to outage credits. Check KB-1004/KB-1005's own thresholds for outage credits instead.\n\n---",
+          "status": "found",
+          "title": "KB-1006 — When We Escalate a Billing Request to Tier 2",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+          "line_end": 42,
+          "line_start": 24,
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "RULE-3",
+          "rank": 4,
+          "reason": "lexical: limit, refund",
+          "score": 2.7726,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
+          "status": "found",
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "## Rule 4 — Escalation & Approval Thresholds Escalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply: - a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**. - b. A **Service-Outage Credit** cal…",
+          "line_end": 55,
+          "line_start": 43,
+          "matched_terms": [],
+          "passage_id": "RULE-4",
+          "rank": 5,
+          "reason": "topic aliases: goodwill",
+          "score": 2.25,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 4 — Escalation & Approval Thresholds\n\nEscalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply:\n\n- a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**.\n- b. A **Service-Outage Credit** calculated under Rule 3 exceeds **$300.00**, or the underlying outage exceeds **30 consecutive days**, or the NOC ticket number cannot be verified at the time of the request.\n- c. The customer has filed a second billing dispute on the same account within **90 days** of a prior resolved dispute (repeat dispute), regardless of dollar amount.\n- d. Suspected fraud indicators are present (e.g., disputed charges tied to a device or SIM not registered on the account, or a pattern of disputes across unrelated accounts from the same contact method).\n\n**Note on applying (a) and (b) together:** a Service-Outage Credit that exceeds $75.00 does **not**, by itself, trigger escalation under (a) — (a) applies only to general Rule 2 credits. A Service-Outage Credit only needs escalation if it independently meets condition (b). Agents should confirm which rule (2 or 3) governs the request *before* checking which escalation condition, if any, applies — checking the $75.00 threshold against a Service-Outage Credit is a misapplication of this rule.\n\n---",
+          "status": "found",
+          "title": "Rule 4 — Escalation & Approval Thresholds",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1007 — Repeat Disputes & Fraud Review **Category:** Escalation Rules · **Last updated:** August 20, 2026 If an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in que…",
+          "line_end": 85,
+          "line_start": 79,
+          "matched_terms": [
+            "but"
+          ],
+          "passage_id": "KB-1007",
+          "rank": 6,
+          "reason": "lexical: but",
+          "score": 1.6487,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1007 — Repeat Disputes & Fraud Review\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nIf an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in question is small. The same applies if fraud indicators are present, such as a disputed charge tied to a SIM or device not registered on the account. Front-line agents should gather details and set expectations with the customer but should not issue a credit themselves in these cases.\n\n---",
+          "status": "found",
+          "title": "KB-1007 — Repeat Disputes & Fraud Review",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "## Rule 5 — Repeat Dispute & Fraud Review Regardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-li…",
+          "line_end": 58,
+          "line_start": 56,
+          "matched_terms": [
+            "but"
+          ],
+          "passage_id": "RULE-5",
+          "rank": 7,
+          "reason": "lexical: but",
+          "score": 1.6487,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 5 — Repeat Dispute & Fraud Review\n\nRegardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-line agent, even if the dollar amount is small. Front-line agents may continue to gather information and communicate status but may not issue the credit themselves in these cases.",
+          "status": "found",
+          "title": "Rule 5 — Repeat Dispute & Fraud Review",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+          "line_end": 42,
+          "line_start": 24,
+          "matched_terms": [],
+          "passage_id": "RULE-3",
+          "rank": null,
+          "reason": "validate outage_amount claim",
+          "score": null,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
+          "status": "found",
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [],
+          "passage_id": "KB-1004",
+          "rank": null,
+          "reason": "validate outage_amount claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "line_end": 18,
+          "line_start": 18,
+          "matched_terms": [],
+          "passage_id": "TRANSCRIPT-14:06",
+          "rank": null,
+          "reason": "validate outage_amount claim",
+          "score": null,
+          "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+          "source_kind": "transcript",
+          "source_text": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "status": "found",
+          "title": "Transcript 14:06 Customer",
+          "transcript_speaker": "Customer",
+          "transcript_timestamp": "14:06"
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "line_end": 18,
+          "line_start": 18,
+          "matched_terms": [],
+          "passage_id": "TRANSCRIPT-14:06",
+          "rank": null,
+          "reason": "validate outage_amount claim",
+          "score": null,
+          "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+          "source_kind": "transcript",
+          "source_text": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "status": "found",
+          "title": "Transcript 14:06 Customer",
+          "transcript_speaker": "Customer",
+          "transcript_timestamp": "14:06"
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a c…",
+          "line_end": 20,
+          "line_start": 20,
+          "matched_terms": [],
+          "passage_id": "TRANSCRIPT-14:08",
+          "rank": null,
+          "reason": "validate outage_amount claim",
+          "score": null,
+          "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+          "source_kind": "transcript",
+          "source_text": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+          "status": "found",
+          "title": "Transcript 14:08 Agent",
+          "transcript_speaker": "Agent",
+          "transcript_timestamp": "14:08"
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+          "line_end": 42,
+          "line_start": 24,
+          "matched_terms": [],
+          "passage_id": "RULE-3",
+          "rank": null,
+          "reason": "validate outage_policy_selection claim",
+          "score": null,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
+          "status": "found",
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [],
+          "passage_id": "KB-1004",
+          "rank": null,
+          "reason": "validate outage_policy_selection claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "## Rule 4 — Escalation & Approval Thresholds Escalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply: - a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**. - b. A **Service-Outage Credit** cal…",
+          "line_end": 55,
+          "line_start": 43,
+          "matched_terms": [],
+          "passage_id": "RULE-4",
+          "rank": null,
+          "reason": "validate account_check_pending claim",
+          "score": null,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 4 — Escalation & Approval Thresholds\n\nEscalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply:\n\n- a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**.\n- b. A **Service-Outage Credit** calculated under Rule 3 exceeds **$300.00**, or the underlying outage exceeds **30 consecutive days**, or the NOC ticket number cannot be verified at the time of the request.\n- c. The customer has filed a second billing dispute on the same account within **90 days** of a prior resolved dispute (repeat dispute), regardless of dollar amount.\n- d. Suspected fraud indicators are present (e.g., disputed charges tied to a device or SIM not registered on the account, or a pattern of disputes across unrelated accounts from the same contact method).\n\n**Note on applying (a) and (b) together:** a Service-Outage Credit that exceeds $75.00 does **not**, by itself, trigger escalation under (a) — (a) applies only to general Rule 2 credits. A Service-Outage Credit only needs escalation if it independently meets condition (b). Agents should confirm which rule (2 or 3) governs the request *before* checking which escalation condition, if any, applies — checking the $75.00 threshold against a Service-Outage Credit is a misapplication of this rule.\n\n---",
+          "status": "found",
+          "title": "Rule 4 — Escalation & Approval Thresholds",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "## Rule 5 — Repeat Dispute & Fraud Review Regardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-li…",
+          "line_end": 58,
+          "line_start": 56,
+          "matched_terms": [],
+          "passage_id": "RULE-5",
+          "rank": null,
+          "reason": "validate account_check_pending claim",
+          "score": null,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 5 — Repeat Dispute & Fraud Review\n\nRegardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-line agent, even if the dollar amount is small. Front-line agents may continue to gather information and communicate status but may not issue the credit themselves in these cases.",
+          "status": "found",
+          "title": "Rule 5 — Repeat Dispute & Fraud Review",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1006 — When We Escalate a Billing Request to Tier 2 **Category:** Escalation Rules · **Last updated:** August 20, 2026 Front-line agents escalate a billing request to a Tier 2 Billing Specialist when: - A general goodwill credit (KB-1002) would push the account's rolling 12-month total above…",
+          "line_end": 78,
+          "line_start": 65,
+          "matched_terms": [],
+          "passage_id": "KB-1006",
+          "rank": null,
+          "reason": "validate account_check_pending claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1006 — When We Escalate a Billing Request to Tier 2\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nFront-line agents escalate a billing request to a Tier 2 Billing Specialist when:\n\n- A general goodwill credit (KB-1002) would push the account's rolling 12-month total above $75.00.\n- A Service-Outage Credit (KB-1004) exceeds $300.00, the outage exceeds 30 consecutive days, or the NOC ticket can't be verified.\n- The same account has a second dispute within 90 days of a prior resolved dispute.\n- Anything about the request looks like possible fraud.\n\nA Service-Outage Credit above $75.00 does **not** by itself require escalation — the $75.00 figure is specific to general goodwill credits under KB-1002, not to outage credits. Check KB-1004/KB-1005's own thresholds for outage credits instead.\n\n---",
+          "status": "found",
+          "title": "KB-1006 — When We Escalate a Billing Request to Tier 2",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1007 — Repeat Disputes & Fraud Review **Category:** Escalation Rules · **Last updated:** August 20, 2026 If an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in que…",
+          "line_end": 85,
+          "line_start": 79,
+          "matched_terms": [],
+          "passage_id": "KB-1007",
+          "rank": null,
+          "reason": "validate account_check_pending claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1007 — Repeat Disputes & Fraud Review\n**Category:** Escalation Rules · **Last updated:** August 20, 2026\n\nIf an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in question is small. The same applies if fraud indicators are present, such as a disputed charge tied to a SIM or device not registered on the account. Front-line agents should gather details and set expectations with the customer but should not issue a credit themselves in these cases.\n\n---",
+          "status": "found",
+          "title": "KB-1007 — Repeat Disputes & Fraud Review",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        }
       ],
       "facts_snapshot": {
         "account_verified": "known_true",
@@ -345,6 +696,7 @@
               "line_end": 52,
               "line_start": 38,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
               "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
             }
           ],
@@ -364,6 +716,7 @@
               "line_end": 37,
               "line_start": 31,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1003 — Understanding Your Nimbus Wireless Bill\n**Category:** Account & Billing Basics · **Last updated:** July 14, 2026\n\nYour monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charges, (4) applicable state and local taxes and regulatory surcharges (e.g., Universal Service Fund contribution, 911 fee), and (5) any credits or adjustments applied during the billing cycle. Taxes and surcharges are calculated by our billing system based on the service address and are passed through from the relevant taxing authority; they are itemized separately from your plan charge on page 2 of your invoice.\n\n---",
               "title": "KB-1003 — Understanding Your Nimbus Wireless Bill"
             },
             {
@@ -372,6 +725,7 @@
               "line_end": 52,
               "line_start": 38,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
               "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
             }
           ],
@@ -399,6 +753,113 @@
       "evidence_ids": [
         "KB-1004",
         "KB-1003"
+      ],
+      "evidence_ledger": [
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1003 — Understanding Your Nimbus Wireless Bill **Category:** Account & Billing Basics · **Last updated:** July 14, 2026 Your monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charg…",
+          "line_end": 37,
+          "line_start": 31,
+          "matched_terms": [
+            "applied",
+            "charge",
+            "during",
+            "plan",
+            "regulatory",
+            "surcharges",
+            "taxes"
+          ],
+          "passage_id": "KB-1003",
+          "rank": 1,
+          "reason": "lexical: applied, charge, during, plan, regulatory, surcharges, taxes; topic aliases: tax",
+          "score": 10.0404,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1003 — Understanding Your Nimbus Wireless Bill\n**Category:** Account & Billing Basics · **Last updated:** July 14, 2026\n\nYour monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charges, (4) applicable state and local taxes and regulatory surcharges (e.g., Universal Service Fund contribution, 911 fee), and (5) any credits or adjustments applied during the billing cycle. Taxes and surcharges are calculated by our billing system based on the service address and are passed through from the relevant taxing authority; they are itemized separately from your plan charge on page 2 of your invoice.\n\n---",
+          "status": "found",
+          "title": "KB-1003 — Understanding Your Nimbus Wireless Bill",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [
+            "charge",
+            "credit",
+            "days",
+            "plan",
+            "re",
+            "up"
+          ],
+          "passage_id": "KB-1004",
+          "rank": 2,
+          "reason": "lexical: charge, credit, days, plan, re, up; topic aliases: tax",
+          "score": 7.5596,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [],
+          "passage_id": "KB-1004",
+          "rank": null,
+          "reason": "validate plan_charge_scope claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1003 — Understanding Your Nimbus Wireless Bill **Category:** Account & Billing Basics · **Last updated:** July 14, 2026 Your monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charg…",
+          "line_end": 37,
+          "line_start": 31,
+          "matched_terms": [],
+          "passage_id": "KB-1003",
+          "rank": null,
+          "reason": "validate tax_recalculation_unknown claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1003 — Understanding Your Nimbus Wireless Bill\n**Category:** Account & Billing Basics · **Last updated:** July 14, 2026\n\nYour monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charges, (4) applicable state and local taxes and regulatory surcharges (e.g., Universal Service Fund contribution, 911 fee), and (5) any credits or adjustments applied during the billing cycle. Taxes and surcharges are calculated by our billing system based on the service address and are passed through from the relevant taxing authority; they are itemized separately from your plan charge on page 2 of your invoice.\n\n---",
+          "status": "found",
+          "title": "KB-1003 — Understanding Your Nimbus Wireless Bill",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [],
+          "passage_id": "KB-1004",
+          "rank": null,
+          "reason": "validate tax_recalculation_unknown claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        }
       ],
       "facts_snapshot": {
         "account_verified": "known_true",
@@ -514,6 +975,7 @@
               "line_end": 42,
               "line_start": 24,
               "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
               "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
             },
             {
@@ -522,6 +984,7 @@
               "line_end": 64,
               "line_start": 53,
               "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "source_text": "### KB-1005 — How to Request a Service-Outage Credit\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\n1. Confirm the customer's service address and the approximate outage dates.\n2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date range. If no ticket exists, the outage cannot be verified under this policy — route to KB-1002 instead.\n3. Confirm the outage on the ticket lasted more than 4 consecutive hours.\n4. Confirm the customer is requesting within **30 days of the ticket's resolution date**.\n5. Calculate the credit: (monthly recurring charge ÷ 30) × full days affected.\n6. If the calculated credit is $300.00 or less and the outage lasted 30 days or fewer, the agent may apply the credit directly. Above either threshold, escalate to a Tier 2 Billing Specialist before applying the credit.\n\n---",
               "title": "KB-1005 — How to Request a Service-Outage Credit"
             },
             {
@@ -530,6 +993,7 @@
               "line_end": 18,
               "line_start": 18,
               "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "source_text": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
               "title": "Transcript 14:06 Customer"
             },
             {
@@ -538,6 +1002,7 @@
               "line_end": 4,
               "line_start": 4,
               "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "source_text": "Date: October 5, 2026",
               "title": "Transcript request date"
             }
           ],
@@ -577,6 +1042,148 @@
         "KB-1005",
         "TRANSCRIPT-14:06",
         "TRANSCRIPT-METADATA"
+      ],
+      "evidence_ledger": [
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+          "line_end": 52,
+          "line_start": 38,
+          "matched_terms": [
+            "more",
+            "not",
+            "outage",
+            "request"
+          ],
+          "passage_id": "KB-1004",
+          "rank": 1,
+          "reason": "lexical: more, not, outage, request; topic aliases: deadline, outage",
+          "score": 7.4549,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\nIf Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as:\n\n```\n(current monthly recurring charge ÷ 30) × number of full days without service\n```\n\nThis credit applies to the recurring plan charge only and is issued **separately from, and is not limited by, the standard $75.00 goodwill credit ceiling described in KB-1002**. A larger outage can result in a credit above $75.00 without needing to fit inside that general ceiling.\n\nTo request this credit, you'll need the NOC outage ticket number (agents can look this up by service address and date range) and the request must be made within 30 days of the outage being resolved. See KB-1005 for the step-by-step request process.\n\n---",
+          "status": "found",
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+          "line_end": 42,
+          "line_start": 24,
+          "matched_terms": [
+            "more",
+            "not",
+            "outage",
+            "request"
+          ],
+          "passage_id": "RULE-3",
+          "rank": 2,
+          "reason": "lexical: more, not, outage, request; topic aliases: deadline, outage",
+          "score": 7.4549,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
+          "status": "found",
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "ranked_retrieval",
+          "excerpt": "### KB-1005 — How to Request a Service-Outage Credit **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 1. Confirm the customer's service address and the approximate outage dates. 2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date ra…",
+          "line_end": 64,
+          "line_start": 53,
+          "matched_terms": [
+            "more",
+            "outage",
+            "request"
+          ],
+          "passage_id": "KB-1005",
+          "rank": 3,
+          "reason": "lexical: more, outage, request; topic aliases: deadline, outage",
+          "score": 6.5794,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1005 — How to Request a Service-Outage Credit\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\n1. Confirm the customer's service address and the approximate outage dates.\n2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date range. If no ticket exists, the outage cannot be verified under this policy — route to KB-1002 instead.\n3. Confirm the outage on the ticket lasted more than 4 consecutive hours.\n4. Confirm the customer is requesting within **30 days of the ticket's resolution date**.\n5. Calculate the credit: (monthly recurring charge ÷ 30) × full days affected.\n6. If the calculated credit is $300.00 or less and the outage lasted 30 days or fewer, the agent may apply the credit directly. Above either threshold, escalate to a Tier 2 Billing Specialist before applying the credit.\n\n---",
+          "status": "found",
+          "title": "KB-1005 — How to Request a Service-Outage Credit",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+          "line_end": 42,
+          "line_start": 24,
+          "matched_terms": [],
+          "passage_id": "RULE-3",
+          "rank": null,
+          "reason": "validate deadline claim",
+          "score": null,
+          "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+          "source_kind": "policy",
+          "source_text": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)\n\nWhen Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as:\n\n```\nService-Outage Credit = (current monthly recurring charge ÷ 30) × number of full days the account was without service\n```\n\nThis credit is issued under a **separate policy track from Rule 2** and is **not counted against, and not capped by, the $75.00 General Refund/Goodwill Credit Limit**. A Service-Outage Credit may validly exceed $75.00 without triggering the Rule 2 ceiling, provided the conditions below are met.\n\nTo qualify, **all** of the following must be true:\n- A valid NOC outage ticket number exists covering the customer's service address and the dates in question.\n- The outage duration recorded on the NOC ticket exceeds 4 consecutive hours.\n- The customer requests the credit within **30 calendar days of the outage's resolution date** (not the billing statement date).\n\nIf any condition is not met (no NOC ticket, outage ≤ 4 hours, or request made more than 30 days after resolution), the request does not qualify under this rule and should instead be evaluated under Rule 2 as a general goodwill request, subject to the $75.00 ceiling and Rule 4 escalation.\n\n---",
+          "status": "found",
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "### KB-1005 — How to Request a Service-Outage Credit **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 1. Confirm the customer's service address and the approximate outage dates. 2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date ra…",
+          "line_end": 64,
+          "line_start": 53,
+          "matched_terms": [],
+          "passage_id": "KB-1005",
+          "rank": null,
+          "reason": "validate deadline claim",
+          "score": null,
+          "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+          "source_kind": "kb",
+          "source_text": "### KB-1005 — How to Request a Service-Outage Credit\n**Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026\n\n1. Confirm the customer's service address and the approximate outage dates.\n2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date range. If no ticket exists, the outage cannot be verified under this policy — route to KB-1002 instead.\n3. Confirm the outage on the ticket lasted more than 4 consecutive hours.\n4. Confirm the customer is requesting within **30 days of the ticket's resolution date**.\n5. Calculate the credit: (monthly recurring charge ÷ 30) × full days affected.\n6. If the calculated credit is $300.00 or less and the outage lasted 30 days or fewer, the agent may apply the credit directly. Above either threshold, escalate to a Tier 2 Billing Specialist before applying the credit.\n\n---",
+          "status": "found",
+          "title": "KB-1005 — How to Request a Service-Outage Credit",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "line_end": 18,
+          "line_start": 18,
+          "matched_terms": [],
+          "passage_id": "TRANSCRIPT-14:06",
+          "rank": null,
+          "reason": "validate deadline claim",
+          "score": null,
+          "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+          "source_kind": "transcript",
+          "source_text": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+          "status": "found",
+          "title": "Transcript 14:06 Customer",
+          "transcript_speaker": "Customer",
+          "transcript_timestamp": "14:06"
+        },
+        {
+          "access_type": "exact_id",
+          "excerpt": "Date: October 5, 2026",
+          "line_end": 4,
+          "line_start": 4,
+          "matched_terms": [],
+          "passage_id": "TRANSCRIPT-METADATA",
+          "rank": null,
+          "reason": "validate deadline claim",
+          "score": null,
+          "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+          "source_kind": "transcript",
+          "source_text": "Date: October 5, 2026",
+          "status": "found",
+          "title": "Transcript request date",
+          "transcript_speaker": null,
+          "transcript_timestamp": null
+        }
       ],
       "facts_snapshot": {
         "account_verified": "known_true",

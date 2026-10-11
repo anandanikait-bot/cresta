@@ -8,6 +8,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from .calculators import outage_credit
+from .evidence import EvidenceLedger, _safe_excerpt, _sanitize_source_text
 from .models import MaterialClaim, Passage
 
 
@@ -19,9 +20,9 @@ class ClaimDraft:
     derived_inputs: dict[str, Any] = field(default_factory=dict)
 
 
-def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialClaim:
+def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim:
     ids = tuple(dict.fromkeys(draft.support_ids))
-    available = {sid: evidence[sid] for sid in ids if sid in evidence}
+    available = evidence.passages_for(ids) if isinstance(evidence, EvidenceLedger) else {}
     supported = False
     status = "unsupported"
     if draft.claim_type == "outage_amount":
@@ -44,12 +45,46 @@ def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialC
             facts_supported = any(f"${charge:.2f}" in p.text and mentions(start, p.text) and mentions(end, p.text) for p in transcript_support)
             duration = end - start
             derived_days_match = duration >= timedelta() and duration.days == days
-            supported = "RULE-3" in available and claimed == recomputed and facts_supported and derived_days_match and duration > timedelta(hours=4)
+            rule3 = re.sub(r"[*_`]", "", available["RULE-3"].text).lower() if "RULE-3" in available else ""
+            kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower() if "KB-1004" in available else ""
+            formula_pattern = r"monthly recurring charge\s*÷\s*30.*?full days"
+            formula_supported = all(re.search(formula_pattern, source, re.DOTALL) for source in (rule3, kb4))
+            supported = formula_supported and claimed == recomputed and facts_supported and derived_days_match and duration > timedelta(hours=4)
         except (KeyError, InvalidOperation, ValueError, TypeError, OverflowError):
             supported = False
     elif draft.claim_type == "tax_recalculation_unknown":
-        supported = {"KB-1003", "KB-1004"}.issubset(available)
+        if {"KB-1003", "KB-1004"}.issubset(available):
+            kb3 = re.sub(r"[*_`]", "", available["KB-1003"].text).lower()
+            kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            claim = draft.text.lower()
+            supported = all(("taxes and surcharges" in kb3, "itemized separately" in kb3,
+                             "recurring plan charge" in kb4, "not say" in claim or "does not specify" in claim,
+                             "tax" in claim, "recalculat" not in kb3 + kb4))
         status = "partially_grounded" if supported else "unsupported"
+    elif draft.claim_type == "general_tax_itemization":
+        if "KB-1003" in available:
+            source = re.sub(r"[*_`]", "", available["KB-1003"].text).lower()
+            claim = draft.text.lower()
+            supported = (
+                "taxes and surcharges" in source and "itemized separately" in source
+                and "itemized separately" in claim and "recalculat" not in source
+            )
+        status = "partially_grounded" if supported else "unsupported"
+    elif draft.claim_type == "device_tax_scope":
+        if {"KB-1003", "KB-1009"}.issubset(available):
+            kb3 = re.sub(r"[*_`]", "", available["KB-1003"].text).lower()
+            kb9 = re.sub(r"[*_`]", "", available["KB-1009"].text).lower()
+            claim = draft.text.lower()
+            supported = all(("one-time device or accessory charges" in kb3, "applicable state and local taxes" in kb3,
+                             "device replacement credit" in kb9, "does not specify" in claim,
+                             "tax" in claim and "replacement" in claim, "tax" not in kb9))
+        status = "partially_grounded" if supported else "unsupported"
+    elif draft.claim_type == "kb_quote":
+        passage = next(iter(available.values()), None)
+        if passage is not None:
+            def plain(text: str) -> str:
+                return re.sub(r"\s+", " ", re.sub(r"[*_`]", "", text)).strip().casefold()
+            supported = plain(draft.text) in plain(passage.text)
     elif draft.claim_type == "outage_policy_selection":
         if {"RULE-3", "KB-1004"}.issubset(available):
             policy = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
@@ -64,17 +99,37 @@ def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialC
                 and ("not capped" in claim or "not limited" in claim)
                 and "rule 2" in claim
             )
-    elif draft.claim_type == "outage_eligibility":
+    elif draft.claim_type == "outage_calculation_method":
         if {"RULE-3", "KB-1004"}.issubset(available):
             rule3 = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
             kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
             claim = draft.text.lower()
             supported = all((
+                "monthly recurring charge ÷ 30" in rule3,
+                "full days" in rule3,
+                "monthly recurring charge ÷ 30" in kb4,
+                "full days" in kb4,
+                "monthly recurring charge" in claim,
+                "full days" in claim,
+                "÷ 30" in claim,
+            ))
+    elif draft.claim_type == "outage_eligibility":
+        if {"RULE-3", "KB-1004", "KB-1005"}.issubset(available):
+            rule3 = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
+            kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            kb5 = re.sub(r"[*_`]", "", available["KB-1005"].text).lower()
+            claim = draft.text.lower()
+            supported = all((
+                "valid noc outage ticket number exists covering" in rule3,
+                "at your service address" in kb4,
+                "covering that address and date range" in kb5,
                 re.search(r"longer than\s+4 consecutive hours", rule3) is not None,
                 re.search(r"within\s+30 calendar days", rule3) is not None,
                 re.search(r"more than\s+4 consecutive hours", kb4) is not None,
                 re.search(r"within 30 days of the outage being resolved", kb4) is not None,
-                "noc" in claim,
+                "valid noc outage ticket" in claim,
+                "service address" in claim,
+                "dates" in claim,
                 "4 consecutive hours" in claim,
                 "30 calendar days" in claim,
                 "resolution" in claim,
@@ -155,6 +210,26 @@ def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialC
                     supported = supported and window >= 0 and f"{days}-day interval is {expected}" in claim
                 except (TypeError, ValueError, OverflowError):
                     supported = False
+    elif draft.claim_type == "dispute_vs_outage_credit":
+        required = {"RULE-1", "KB-1001", "RULE-3", "KB-1004"}
+        if required.issubset(available):
+            rule1 = re.sub(r"[*_`]", "", available["RULE-1"].text).lower()
+            kb1 = re.sub(r"[*_`]", "", available["KB-1001"].text).lower()
+            rule3 = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
+            kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            claim = draft.text.lower()
+            supported = all((
+                "specific line item or charge" in rule1,
+                "determine which policy governs the disputed charge" in kb1,
+                "service-outage credit" in rule3,
+                "separate policy track from rule 2" in rule3,
+                "service-outage credit" in kb4,
+                "billing dispute" in claim,
+                "separate" in claim,
+                "service-outage credit" in claim,
+                "rule 1" in claim,
+                "rule 3" in claim,
+            ))
     elif draft.claim_type == "deadline":
         supported = {"RULE-3", "KB-1005"}.issubset(available) and bool(draft.derived_inputs.get("request_deadline"))
         deadline_value = str(draft.derived_inputs.get("request_deadline", ""))
@@ -179,13 +254,27 @@ def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialC
             except (KeyError, ValueError, OverflowError):
                 supported = False
     elif draft.claim_type == "account_check_pending":
-        supported = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}.issubset(available)
+        required = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}
+        claim = draft.text.lower()
+        pending_language = any(term in claim for term in ("not established", "does not determine", "unknown", "unconfirmed", "pending"))
+        supported = required.issubset(available) and pending_language
+        status = "requires_account_check" if supported else "unsupported"
+    elif draft.claim_type == "ticket_approval_unknown":
+        if {"RULE-4", "KB-1006"}.issubset(available):
+            rule4 = re.sub(r"[*_`]", "", available["RULE-4"].text).lower()
+            kb6 = re.sub(r"[*_`]", "", available["KB-1006"].text).lower()
+            claim = draft.text.lower()
+            ticket_reported = any(p.source_kind == "transcript" and "ticket" in p.text.lower() for p in available.values())
+            status_unknown = "does not establish credit approval" in claim or "authorization is not established" in claim
+            supported = "cannot be verified" in rule4 and "ticket can't be verified" in kb6 and status_unknown
+            if ticket_reported:
+                supported = supported and "out-" in " ".join(p.text.lower() for p in available.values() if p.source_kind == "transcript")
         status = "requires_account_check" if supported else "unsupported"
     elif draft.claim_type == "plan_charge_scope":
         if "KB-1004" in available:
             source = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
             claim = draft.text.lower()
-            supported = "recurring plan charge" in source and "recurring plan charge" in claim
+            supported = "recurring plan charge only" in source and "recurring plan charge" in claim and "only" in claim
     elif draft.claim_type == "general_goodwill":
         if {"RULE-2", "KB-1002"}.issubset(available):
             policy = re.sub(r"[*_`]", "", available["RULE-2"].text).lower()
@@ -240,6 +329,7 @@ def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialC
         "source_file": passage.source_file,
         "line_start": passage.line_start,
         "line_end": passage.line_end,
-        "excerpt": passage.excerpt(300),
+        "excerpt": _safe_excerpt(passage.text),
+        "source_text": _sanitize_source_text(passage.text),
     } for passage in available.values())
     return MaterialClaim(draft.claim_type, draft.text, ids, status, draft.derived_inputs, citations)

@@ -6,7 +6,7 @@ import sys
 import tempfile
 import unittest
 
-from agent.models import Action, CaseFacts
+from agent.models import Action, CaseFacts, TicketStatus, Truth
 from agent.rules import load_rules
 from agent.sources import load_sources
 from agent.workflow import BillingWorkflow
@@ -89,6 +89,16 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("KB-1001", trace.evidence_ids)
         self.assertIn("specific charge", trace.answer.lower())
         self.assertIn("cannot open a case", trace.answer.lower())
+
+    def test_disputing_an_outage_charge_uses_rule_one_filing_guidance(self):
+        trace = workflow().answer("Can I dispute my outage charge?")
+        self.assertEqual(trace.intent, "file_dispute")
+        self.assertEqual(trace.decision.selected_rule_id, "RULE-1")
+        self.assertIn("specific charge", trace.answer.lower())
+        self.assertIn("outage credit", trace.answer.lower())
+        self.assertIn("separate", trace.answer.lower())
+        self.assertEqual({"RULE-1", "KB-1001", "RULE-3", "KB-1004"}, set(trace.evidence_ids))
+        self.assertIsNone(trace.decision.credit_amount)
 
     def test_outage_limit_question_without_demo_context_is_answered_as_policy_info(self):
         trace = workflow().answer("Does the $75 cap apply to a confirmed outage credit?")
@@ -233,6 +243,101 @@ class WorkflowTests(unittest.TestCase):
             q = subprocess.run([sys.executable, str(ROOT / "run.py"), "--question", "How do I file a billing dispute?"], cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(q.returncode, 0, q.stderr)
             self.assertIn("KB-1001", q.stdout)
+
+    def test_evidence_ledger_logs_ranked_and_reasoned_exact_fetches(self):
+        trace = workflow().answer("How do I file a billing dispute?")
+        data = trace.to_dict()
+        ledger = data["evidence_ledger"]
+        ranked = next(row for row in ledger if row["access_type"] == "ranked_retrieval")
+        exact = next(row for row in ledger if row["access_type"] == "exact_id" and row["passage_id"] == "KB-1001")
+        self.assertEqual(ranked["rank"], 1)
+        self.assertTrue(ranked["reason"])
+        self.assertTrue(ranked["source_file"])
+        self.assertGreater(ranked["line_start"], 0)
+        self.assertIn("dispute_policy", exact["reason"])
+        logged_ids = {row["passage_id"] for row in ledger if row["status"] == "found"}
+        self.assertTrue(all(set(claim.support_ids) <= logged_ids for claim in trace.claims))
+
+    def test_device_tax_question_does_not_use_outage_tax_policy(self):
+        trace = workflow().answer("Will taxes apply to my device replacement?")
+        self.assertEqual(trace.intent, "device_protection")
+        self.assertNotIn("KB-1004", trace.evidence_ids)
+        self.assertNotIn("outage credit applies", trace.answer.lower())
+        self.assertNotIn("will apply", trace.answer.lower())
+
+    def test_coverage_ambiguity_gets_targeted_clarification(self):
+        trace = workflow().answer("Can I get compensation for 11 days without coverage?")
+        self.assertEqual(trace.action, Action.CLARIFY)
+        self.assertIn("internet service outage", trace.answer.lower())
+        self.assertIn("device protection", trace.answer.lower())
+        self.assertIsNone(trace.decision.credit_amount)
+
+    def test_device_outage_cross_category_question_gets_targeted_clarification(self):
+        trace = workflow().answer("Does Device Protection cover my internet outage?")
+        self.assertEqual(trace.action, Action.CLARIFY)
+        self.assertIn("rule 3", trace.answer.lower())
+        self.assertIn("device protection replacement credit", trace.answer.lower())
+        self.assertIsNone(trace.decision.credit_amount)
+
+    def test_device_deductible_answer_quotes_supported_tier_range(self):
+        trace = workflow().answer("What is the device protection deductible?")
+        self.assertIn("$25–$199", trace.answer)
+        self.assertIn("depending on device tier", trace.answer.lower())
+        self.assertEqual(trace.evidence_ids, ["KB-1009"])
+        self.assertEqual(trace.claims[0].status, "grounded")
+
+    def test_internet_outage_cap_question_explains_conditional_rule_three(self):
+        trace = workflow().answer("Does the $75 refund cap apply if my internet stops working?")
+        self.assertEqual(trace.intent, "service_outage_policy")
+        self.assertIn("not capped", trace.answer.lower())
+        self.assertIn("noc", trace.answer.lower())
+        self.assertIn("service address and dates", trace.answer.lower())
+        self.assertIn("30 calendar days", trace.answer.lower())
+        self.assertIsNone(trace.decision.credit_amount)
+        self.assertNotIn("eligible_for_frontline_action", trace.decision.status)
+
+    def test_late_outage_goodwill_question_does_not_promise_rule_two_credit(self):
+        trace = workflow().answer("Can I get a goodwill credit when my outage request is late?")
+        self.assertNotIn("you qualify", trace.answer.lower())
+        self.assertNotIn("you are eligible", trace.answer.lower())
+        self.assertIn("confirmed billing error", trace.answer.lower())
+        self.assertIn("credit history", trace.answer.lower())
+
+    def test_agent_reported_ticket_does_not_establish_approval(self):
+        facts = CaseFacts(ticket_id="OUT-58823", ticket_status=TicketStatus.AGENT_REPORTED,
+                          independent_ticket_verification=Truth.UNKNOWN)
+        trace = workflow().answer("My agent said the ticket was confirmed. Has my credit been approved?", facts)
+        self.assertIn(trace.action, (Action.CLARIFY, Action.ESCALATE))
+        self.assertIn("unknown", trace.answer.lower())
+        self.assertNotIn("approved", trace.answer.lower())
+        self.assertNotIn("issued", trace.answer.lower())
+
+    def test_unknown_approval_question_does_not_invent_an_agent_report(self):
+        trace = workflow().answer("Has my credit been approved?")
+        self.assertEqual(trace.action, Action.ESCALATE)
+        self.assertIn("unknown", trace.answer.lower())
+        self.assertNotIn("reported ticket", trace.answer.lower())
+        self.assertNotIn("reported ticket", trace.claims[0].text.lower())
+
+    def test_dispute_of_a_tax_line_item_stays_on_rule_one(self):
+        trace = workflow().answer("Can I dispute a tax charge on my invoice?")
+        self.assertEqual(trace.intent, "file_dispute")
+        self.assertEqual(trace.decision.selected_rule_id, "RULE-1")
+        self.assertNotIn("KB-1004", trace.evidence_ids)
+
+    def test_general_refund_tax_question_does_not_borrow_outage_scope(self):
+        trace = workflow().answer("How are regulatory fees recalculated after a refund?")
+        self.assertNotIn("KB-1004", trace.evidence_ids)
+        self.assertNotIn("outage credit", trace.answer.lower())
+        self.assertNotRegex(trace.answer.lower(), r"(?:will|are) be recalculated")
+        self.assertIn("does not specify", trace.answer.lower())
+
+    def test_unknown_in_scope_question_uses_only_a_direct_source_sentence(self):
+        trace = workflow().answer("Which items does the monthly invoice include?")
+        self.assertEqual(trace.action, Action.ANSWER)
+        self.assertIn("monthly invoice includes", trace.answer.lower())
+        self.assertEqual(trace.evidence_ids, ["KB-1003"])
+        self.assertEqual(trace.claims[0].status, "grounded")
 
 
 if __name__ == "__main__":

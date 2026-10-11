@@ -16,6 +16,22 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual(interpret("What is the deadline for my phone warranty?").intent, "unknown")
         self.assertEqual(interpret("What is the deadline for my phone warranty?", CaseFacts(ticket_id="OUT-58823")).intent, "unknown")
 
+    def test_full_subject_routes_device_taxes_and_internet_outage_correctly(self):
+        self.assertEqual(interpret("Will taxes apply to my device replacement?").intent, "device_protection")
+        self.assertEqual(interpret("Will taxes apply to my replacement phone?").intent, "device_protection")
+        self.assertEqual(interpret("Does the $75 refund cap apply if my internet stops working?").intent, "service_outage_policy")
+        self.assertEqual(interpret("Can I dispute a tax charge on my invoice?").intent, "file_dispute")
+
+    def test_ambiguous_coverage_requests_clarification_intent(self):
+        result = interpret("Can I get compensation for 11 days without coverage?")
+        self.assertTrue(result.ambiguity)
+        self.assertEqual(result.intent, "clarification")
+
+    def test_device_and_outage_topics_are_not_silently_collapsed(self):
+        result = interpret("Does Device Protection cover my internet outage?")
+        self.assertEqual(result.intent, "clarification")
+        self.assertTrue(result.ambiguity)
+
     def test_invalid_optional_language_json_falls_back_to_offline_intent(self):
         result, warning = validate_model_payload('{"intent":"approve_credit","amount":1000}', "Will regulatory levies change after the outage credit?")
         self.assertEqual(result.intent, "tax_recalculation")
