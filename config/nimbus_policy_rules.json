@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "currency": "USD",
+  "source_authority": {
+    "RULE-1": 1,
+    "RULE-2": 1,
+    "RULE-3": 1,
+    "RULE-4": 1,
+    "RULE-5": 1,
+    "KB-1001": 2,
+    "KB-1002": 2,
+    "KB-1003": 2,
+    "KB-1004": 2,
+    "KB-1005": 2,
+    "KB-1006": 2,
+    "KB-1007": 2,
+    "KB-1008": 2,
+    "KB-1009": 2,
+    "KB-1010": 2
+  },
+  "rules": {
+    "RULE-1": {"source_section_id": "RULE-1", "category": "dispute_window", "priority": 10, "dispute_window_calendar_days": 60},
+    "RULE-2": {"source_section_id": "RULE-2", "category": "general_goodwill", "priority": 20, "rolling_period_months": 12, "cumulative_limit": "75.00"},
+    "RULE-3": {"source_section_id": "RULE-3", "category": "service_outage", "priority": 30, "minimum_duration_hours_exclusive": 4, "request_window_calendar_days_inclusive": 30, "formula": "outage_credit", "general_goodwill_cap_applies": false},
+    "RULE-4": {"source_section_id": "RULE-4", "category": "approvals", "priority": 40, "outage_credit_tier2_exclusive": "300.00", "outage_duration_days_tier2_exclusive": 30, "repeat_dispute_window_days_inclusive": 90},
+    "RULE-5": {"source_section_id": "RULE-5", "category": "repeat_fraud_override", "priority": 50}
+  },
+  "supported_calculators": ["outage_credit"]
+}

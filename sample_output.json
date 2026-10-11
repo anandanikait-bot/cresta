@@ -1,0 +1,689 @@
+{
+  "metadata": {
+    "external_services_used": false,
+    "kb_articles_parsed": 10,
+    "language_mode": "offline deterministic",
+    "policy_sections_parsed": 5,
+    "source_conflicts": [],
+    "source_documents": {
+      "kb": {
+        "file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+        "sha256": "5d05d5d5ab4a77c9a5352ba89e8855731c568f3723eb1d1264c1d03fb460eafd"
+      },
+      "policy": {
+        "file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+        "sha256": "2e95cd29f6bf231ddac4f19e72e02b448c28ff7393ae2648b78994df5a09e48d"
+      },
+      "transcript": {
+        "file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+        "sha256": "a537319ad20f6843edee47b3497f807a694e1795747ead4e9efb5a3752ec8ad8"
+      }
+    },
+    "warnings": [
+      "KB header says 9 but 10 article headings were parsed; actual headings were used."
+    ]
+  },
+  "turns": [
+    {
+      "action": "ANSWER",
+      "answer": "This is a separate Service-Outage Credit under Rule 3, not the general $75 goodwill cap. Using the reported $225.00 monthly charge and 11 full outage days, ($225.00 ÷ 30) × 11 = $82.50. That amount is not limited by Rule 2's $75 cap. The transcript records an agent-reported NOC lookup; this replay does not independently access NOC. Required checks remain pending (prior_resolved_dispute, fraud_indicator); no credit has been issued.",
+      "claims": [
+        {
+          "citations": [
+            {
+              "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+              "id": "RULE-3",
+              "line_end": 42,
+              "line_start": 24,
+              "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
+            },
+            {
+              "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+              "id": "KB-1004",
+              "line_end": 52,
+              "line_start": 38,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+            }
+          ],
+          "claim_type": "outage_policy_selection",
+          "derived_inputs": {},
+          "status": "grounded",
+          "support_ids": [
+            "RULE-3",
+            "KB-1004"
+          ],
+          "text": "Rule 3 is the specific service-outage track and is not capped by Rule 2's $75 goodwill limit."
+        },
+        {
+          "citations": [
+            {
+              "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+              "id": "RULE-3",
+              "line_end": 42,
+              "line_start": 24,
+              "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
+            },
+            {
+              "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+              "id": "KB-1004",
+              "line_end": 52,
+              "line_start": 38,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+            },
+            {
+              "excerpt": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+              "id": "TRANSCRIPT-14:06",
+              "line_end": 18,
+              "line_start": 18,
+              "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "title": "Transcript 14:06 Customer"
+            },
+            {
+              "excerpt": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a c…",
+              "id": "TRANSCRIPT-14:08",
+              "line_end": 20,
+              "line_start": 20,
+              "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "title": "Transcript 14:08 Agent"
+            }
+          ],
+          "claim_type": "outage_amount",
+          "derived_inputs": {
+            "amount": "82.50",
+            "full_outage_days": 11,
+            "monthly_recurring_charge": "225.00",
+            "outage_end": "2026-09-21T06:00:00",
+            "outage_start": "2026-09-10T06:00:00"
+          },
+          "status": "grounded",
+          "support_ids": [
+            "RULE-3",
+            "KB-1004",
+            "TRANSCRIPT-14:06",
+            "TRANSCRIPT-14:08"
+          ],
+          "text": "The calculated service-outage amount is $82.50."
+        },
+        {
+          "citations": [
+            {
+              "excerpt": "## Rule 4 — Escalation & Approval Thresholds Escalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply: - a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**. - b. A **Service-Outage Credit** cal…",
+              "id": "RULE-4",
+              "line_end": 55,
+              "line_start": 43,
+              "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "title": "Rule 4 — Escalation & Approval Thresholds"
+            },
+            {
+              "excerpt": "## Rule 5 — Repeat Dispute & Fraud Review Regardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-li…",
+              "id": "RULE-5",
+              "line_end": 58,
+              "line_start": 56,
+              "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "title": "Rule 5 — Repeat Dispute & Fraud Review"
+            },
+            {
+              "excerpt": "### KB-1006 — When We Escalate a Billing Request to Tier 2 **Category:** Escalation Rules · **Last updated:** August 20, 2026 Front-line agents escalate a billing request to a Tier 2 Billing Specialist when: - A general goodwill credit (KB-1002) would push the account's rolling 12-month total above…",
+              "id": "KB-1006",
+              "line_end": 78,
+              "line_start": 65,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1006 — When We Escalate a Billing Request to Tier 2"
+            },
+            {
+              "excerpt": "### KB-1007 — Repeat Disputes & Fraud Review **Category:** Escalation Rules · **Last updated:** August 20, 2026 If an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in que…",
+              "id": "KB-1007",
+              "line_end": 85,
+              "line_start": 79,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1007 — Repeat Disputes & Fraud Review"
+            }
+          ],
+          "claim_type": "account_check_pending",
+          "derived_inputs": {},
+          "status": "requires_account_check",
+          "support_ids": [
+            "RULE-4",
+            "RULE-5",
+            "KB-1006",
+            "KB-1007"
+          ],
+          "text": "Account-level repeat-dispute and fraud checks are not established; no credit has been issued."
+        }
+      ],
+      "decision": {
+        "approval_reasons": [],
+        "calculations": {
+          "formula": "quantize_cents((monthly_recurring_charge / Decimal('30')) * full_outage_days)",
+          "full_outage_days": 11,
+          "monthly_recurring_charge": "225.00",
+          "outage_amount_tier2_threshold": "300.00",
+          "outage_amount_tier2_triggered": false,
+          "outage_duration_days_tier2_threshold": 30,
+          "outage_duration_hours": "264.00",
+          "outage_duration_tier2_triggered": false,
+          "request_days_after_resolution": 14,
+          "request_deadline": "2026-10-21",
+          "result": "82.50"
+        },
+        "credit_amount": "82.50",
+        "deadline": "2026-10-21",
+        "exclusions": [
+          "RULE-2 cumulative $75 limit does not apply to a RULE-3 outage credit"
+        ],
+        "reason": "The specific service-outage track governs; Rule 2's $75 goodwill cap is excluded.",
+        "selected_rule_id": "RULE-3",
+        "status": "calculated_pending_checks",
+        "unresolved_checks": [
+          "prior_resolved_dispute",
+          "fraud_indicator"
+        ]
+      },
+      "evidence_ids": [
+        "RULE-3",
+        "KB-1004",
+        "TRANSCRIPT-14:06",
+        "TRANSCRIPT-14:08",
+        "RULE-4",
+        "RULE-5",
+        "KB-1006",
+        "KB-1007"
+      ],
+      "facts_snapshot": {
+        "account_verified": "known_true",
+        "billing_error_confirmed": "unknown",
+        "credit_history": "unknown",
+        "disputed_item": "monthly recurring charge",
+        "fact_provenance": {
+          "account_verified": {
+            "quote": "Great, thanks, that matches — you're verified. Can you confirm the exact dates you were without service, and which charge on the bill you're disputing?",
+            "speaker": "Agent",
+            "timestamp": "14:05"
+          },
+          "disputed_item": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "monthly_recurring_charge": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_end": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_start": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "request_date": {
+            "quote": "Date: October 5, 2026",
+            "source_id": "TRANSCRIPT-METADATA"
+          },
+          "service_address_match": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          },
+          "ticket_id": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          }
+        },
+        "fraud_indicator": "unknown",
+        "full_outage_days": 11,
+        "independent_ticket_verification": "unknown",
+        "invoice_statement_date": "2026-10-01",
+        "monthly_recurring_charge": "225.00",
+        "outage_duration_hours": "264.00",
+        "outage_end": "2026-09-21T06:00:00",
+        "outage_start": "2026-09-10T06:00:00",
+        "prior_resolved_dispute": "unknown",
+        "prior_resolved_dispute_date": null,
+        "request_date": "2026-10-05",
+        "service_address_match": "known_true",
+        "ticket_id": "OUT-58823",
+        "ticket_status": "agent_reported"
+      },
+      "intent": "service_outage_amount",
+      "language_mode": "offline deterministic",
+      "provenance_notes": [],
+      "question": "Okay, but isn't your refund limit only $75? I saw something like that in your terms once. So you can only give me $75 back for this, right?",
+      "retrieved": [
+        {
+          "excerpt": "### KB-1002 — Refund Eligibility & Goodwill Credit Limits **Category:** Refund Eligibility · **Last updated:** August 5, 2026 Confirmed billing errors (duplicate charges, incorrect proration, mis-applied promo codes, incorrectly billed add-ons) are eligible for a goodwill refund or account credit of **up to $75.00 per account per rolling 12-month period**.…",
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "KB-1002",
+          "reason": "lexical: limit, refund; topic aliases: goodwill",
+          "score": 5.0226,
+          "title": "KB-1002 — Refund Eligibility & Goodwill Credit Limits"
+        },
+        {
+          "excerpt": "## Rule 2 — General Refund / Goodwill Credit Limit For billing errors confirmed by the agent (e.g., duplicate charges, incorrect proration, mis-applied promotions, mis-billed add-ons) that do **not** fall under a more specific policy in this document, NimbusCare agents may issue a goodwill refund or account credit of **up to $75.00 per account, per rolling…",
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "RULE-2",
+          "reason": "lexical: limit, refund; topic aliases: goodwill",
+          "score": 5.0226,
+          "title": "Rule 2 — General Refund / Goodwill Credit Limit"
+        },
+        {
+          "excerpt": "### KB-1006 — When We Escalate a Billing Request to Tier 2 **Category:** Escalation Rules · **Last updated:** August 20, 2026 Front-line agents escalate a billing request to a Tier 2 Billing Specialist when: - A general goodwill credit (KB-1002) would push the account's rolling 12-month total above $75.00. - A Service-Outage Credit (KB-1004) exceeds $300.00…",
+          "matched_terms": [
+            "like"
+          ],
+          "passage_id": "KB-1006",
+          "reason": "lexical: like; topic aliases: goodwill",
+          "score": 4.3294,
+          "title": "KB-1006 — When We Escalate a Billing Request to Tier 2"
+        },
+        {
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``` Service-Outage Credit = (current monthly recurring charge…",
+          "matched_terms": [
+            "limit",
+            "refund"
+          ],
+          "passage_id": "RULE-3",
+          "reason": "lexical: limit, refund",
+          "score": 2.7726,
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
+        },
+        {
+          "excerpt": "## Rule 4 — Escalation & Approval Thresholds Escalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply: - a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**. - b. A **Service-Outage Credit** calculated under Rule 3 exceeds **$300.00**, or the underlying…",
+          "matched_terms": [],
+          "passage_id": "RULE-4",
+          "reason": "topic aliases: goodwill",
+          "score": 2.25,
+          "title": "Rule 4 — Escalation & Approval Thresholds"
+        },
+        {
+          "excerpt": "### KB-1007 — Repeat Disputes & Fraud Review **Category:** Escalation Rules · **Last updated:** August 20, 2026 If an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in question is small. The same applies if fraud indicators are pre…",
+          "matched_terms": [
+            "but"
+          ],
+          "passage_id": "KB-1007",
+          "reason": "lexical: but",
+          "score": 1.6487,
+          "title": "KB-1007 — Repeat Disputes & Fraud Review"
+        },
+        {
+          "excerpt": "## Rule 5 — Repeat Dispute & Fraud Review Regardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-line agent, even if the dollar amount is small. Front-line age…",
+          "matched_terms": [
+            "but"
+          ],
+          "passage_id": "RULE-5",
+          "reason": "lexical: but",
+          "score": 1.6487,
+          "title": "Rule 5 — Repeat Dispute & Fraud Review"
+        }
+      ],
+      "timestamp": "14:09"
+    },
+    {
+      "action": "ESCALATE",
+      "answer": "The documented outage credit applies to the recurring plan charge. Taxes and regulatory surcharges are listed separately. The supplied guidance does not specify whether those items are recalculated or refunded after an outage credit, so a billing specialist must confirm that part; I can't answer yes or no from these sources.",
+      "claims": [
+        {
+          "citations": [
+            {
+              "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+              "id": "KB-1004",
+              "line_end": 52,
+              "line_start": 38,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+            }
+          ],
+          "claim_type": "plan_charge_scope",
+          "derived_inputs": {},
+          "status": "grounded",
+          "support_ids": [
+            "KB-1004"
+          ],
+          "text": "The documented outage credit is calculated against the recurring plan charge only."
+        },
+        {
+          "citations": [
+            {
+              "excerpt": "### KB-1003 — Understanding Your Nimbus Wireless Bill **Category:** Account & Billing Basics · **Last updated:** July 14, 2026 Your monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charg…",
+              "id": "KB-1003",
+              "line_end": 37,
+              "line_start": 31,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1003 — Understanding Your Nimbus Wireless Bill"
+            },
+            {
+              "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a pro…",
+              "id": "KB-1004",
+              "line_end": 52,
+              "line_start": 38,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+            }
+          ],
+          "claim_type": "tax_recalculation_unknown",
+          "derived_inputs": {},
+          "status": "partially_grounded",
+          "support_ids": [
+            "KB-1003",
+            "KB-1004"
+          ],
+          "text": "Taxes and regulatory surcharges are itemized separately; the supplied sources do not say whether they are recalculated or refunded after an outage credit."
+        }
+      ],
+      "decision": {
+        "approval_reasons": [],
+        "calculations": {},
+        "credit_amount": null,
+        "deadline": null,
+        "exclusions": [],
+        "reason": "Informational answer; no account action is available in this prototype.",
+        "selected_rule_id": null,
+        "status": "informational",
+        "unresolved_checks": []
+      },
+      "evidence_ids": [
+        "KB-1004",
+        "KB-1003"
+      ],
+      "facts_snapshot": {
+        "account_verified": "known_true",
+        "billing_error_confirmed": "unknown",
+        "credit_history": "unknown",
+        "disputed_item": "monthly recurring charge",
+        "fact_provenance": {
+          "account_verified": {
+            "quote": "Great, thanks, that matches — you're verified. Can you confirm the exact dates you were without service, and which charge on the bill you're disputing?",
+            "speaker": "Agent",
+            "timestamp": "14:05"
+          },
+          "disputed_item": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "monthly_recurring_charge": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_end": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_start": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "request_date": {
+            "quote": "Date: October 5, 2026",
+            "source_id": "TRANSCRIPT-METADATA"
+          },
+          "service_address_match": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          },
+          "ticket_id": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          }
+        },
+        "fraud_indicator": "unknown",
+        "full_outage_days": 11,
+        "independent_ticket_verification": "unknown",
+        "invoice_statement_date": "2026-10-01",
+        "monthly_recurring_charge": "225.00",
+        "outage_duration_hours": "264.00",
+        "outage_end": "2026-09-21T06:00:00",
+        "outage_start": "2026-09-10T06:00:00",
+        "prior_resolved_dispute": "unknown",
+        "prior_resolved_dispute_date": null,
+        "request_date": "2026-10-05",
+        "service_address_match": "known_true",
+        "ticket_id": "OUT-58823",
+        "ticket_status": "agent_reported"
+      },
+      "intent": "tax_recalculation",
+      "language_mode": "offline deterministic",
+      "provenance_notes": [
+        "The outage facts are available only from the earlier transcript turns; later case facts were not added to earlier snapshots."
+      ],
+      "question": "Sure, no rush. While you're looking into that — does whatever credit I end up getting also reduce the taxes and regulatory surcharges I paid during those eleven days, or is it only applied against the plan charge itself?",
+      "retrieved": [
+        {
+          "excerpt": "### KB-1003 — Understanding Your Nimbus Wireless Bill **Category:** Account & Billing Basics · **Last updated:** July 14, 2026 Your monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charges, (4) applicable state and local taxes and regulatory surc…",
+          "matched_terms": [
+            "applied",
+            "charge",
+            "during",
+            "plan",
+            "regulatory",
+            "surcharges",
+            "taxes"
+          ],
+          "passage_id": "KB-1003",
+          "reason": "lexical: applied, charge, during, plan, regulatory, surcharges, taxes; topic aliases: tax",
+          "score": 10.0404,
+          "title": "KB-1003 — Understanding Your Nimbus Wireless Bill"
+        },
+        {
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as: ``` (current…",
+          "matched_terms": [
+            "charge",
+            "credit",
+            "days",
+            "plan",
+            "re",
+            "up"
+          ],
+          "passage_id": "KB-1004",
+          "reason": "lexical: charge, credit, days, plan, re, up; topic aliases: tax",
+          "score": 7.5596,
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+        }
+      ],
+      "timestamp": "14:11"
+    },
+    {
+      "action": "ANSWER",
+      "answer": "A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely.",
+      "claims": [
+        {
+          "citations": [
+            {
+              "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``…",
+              "id": "RULE-3",
+              "line_end": 42,
+              "line_start": 24,
+              "source_file": "Nimbus Wireless — Billing Dispute & Refund Policy.md",
+              "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
+            },
+            {
+              "excerpt": "### KB-1005 — How to Request a Service-Outage Credit **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 1. Confirm the customer's service address and the approximate outage dates. 2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date ra…",
+              "id": "KB-1005",
+              "line_end": 64,
+              "line_start": 53,
+              "source_file": "NimbusCare Knowledge Base — Billing & Credits Excerpt.md",
+              "title": "KB-1005 — How to Request a Service-Outage Credit"
+            },
+            {
+              "excerpt": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+              "id": "TRANSCRIPT-14:06",
+              "line_end": 18,
+              "line_start": 18,
+              "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "title": "Transcript 14:06 Customer"
+            },
+            {
+              "excerpt": "Date: October 5, 2026",
+              "id": "TRANSCRIPT-METADATA",
+              "line_end": 4,
+              "line_start": 4,
+              "source_file": "NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt",
+              "title": "Transcript request date"
+            }
+          ],
+          "claim_type": "deadline",
+          "derived_inputs": {
+            "request_date": "2026-10-05",
+            "request_day_delta": 14,
+            "request_deadline": "2026-10-21",
+            "resolution_date": "2026-09-21"
+          },
+          "status": "grounded",
+          "support_ids": [
+            "RULE-3",
+            "KB-1005",
+            "TRANSCRIPT-14:06",
+            "TRANSCRIPT-METADATA"
+          ],
+          "text": "A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely."
+        }
+      ],
+      "decision": {
+        "approval_reasons": [],
+        "calculations": {
+          "deadline": "2026-10-21",
+          "request_day_delta": 14
+        },
+        "credit_amount": null,
+        "deadline": "2026-10-21",
+        "exclusions": [],
+        "reason": "Request timing uses calendar dates from the outage resolution date.",
+        "selected_rule_id": "RULE-3",
+        "status": "eligible",
+        "unresolved_checks": []
+      },
+      "evidence_ids": [
+        "RULE-3",
+        "KB-1005",
+        "TRANSCRIPT-14:06",
+        "TRANSCRIPT-METADATA"
+      ],
+      "facts_snapshot": {
+        "account_verified": "known_true",
+        "billing_error_confirmed": "unknown",
+        "credit_history": "unknown",
+        "disputed_item": "monthly recurring charge",
+        "fact_provenance": {
+          "account_verified": {
+            "quote": "Great, thanks, that matches — you're verified. Can you confirm the exact dates you were without service, and which charge on the bill you're disputing?",
+            "speaker": "Agent",
+            "timestamp": "14:05"
+          },
+          "disputed_item": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "monthly_recurring_charge": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_end": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "outage_start": {
+            "quote": "Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.",
+            "speaker": "Customer",
+            "timestamp": "14:06"
+          },
+          "request_date": {
+            "quote": "Date: October 5, 2026",
+            "source_id": "TRANSCRIPT-METADATA"
+          },
+          "service_address_match": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          },
+          "ticket_id": {
+            "quote": "Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.",
+            "speaker": "Agent",
+            "timestamp": "14:08"
+          }
+        },
+        "fraud_indicator": "unknown",
+        "full_outage_days": 11,
+        "independent_ticket_verification": "unknown",
+        "invoice_statement_date": "2026-10-01",
+        "monthly_recurring_charge": "225.00",
+        "outage_duration_hours": "264.00",
+        "outage_end": "2026-09-21T06:00:00",
+        "outage_start": "2026-09-10T06:00:00",
+        "prior_resolved_dispute": "unknown",
+        "prior_resolved_dispute_date": null,
+        "request_date": "2026-10-05",
+        "service_address_match": "known_true",
+        "ticket_id": "OUT-58823",
+        "ticket_status": "agent_reported"
+      },
+      "intent": "outage_deadline",
+      "language_mode": "offline deterministic",
+      "provenance_notes": [],
+      "question": "Sounds good. One more thing while I have you — how long do I actually have to submit a request like this after an outage gets fixed? Just want to make sure I'm not about to miss some deadline.",
+      "retrieved": [
+        {
+          "excerpt": "### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as: ``` (current…",
+          "matched_terms": [
+            "more",
+            "not",
+            "outage",
+            "request"
+          ],
+          "passage_id": "KB-1004",
+          "reason": "lexical: more, not, outage, request; topic aliases: deadline, outage",
+          "score": 7.4549,
+          "title": "KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation"
+        },
+        {
+          "excerpt": "## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``` Service-Outage Credit = (current monthly recurring charge…",
+          "matched_terms": [
+            "more",
+            "not",
+            "outage",
+            "request"
+          ],
+          "passage_id": "RULE-3",
+          "reason": "lexical: more, not, outage, request; topic aliases: deadline, outage",
+          "score": 7.4549,
+          "title": "Rule 3 — Service-Outage Credit Policy (Exception to Rule 2)"
+        },
+        {
+          "excerpt": "### KB-1005 — How to Request a Service-Outage Credit **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 1. Confirm the customer's service address and the approximate outage dates. 2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date range. If no ticket exists, the outage cannot be verified unde…",
+          "matched_terms": [
+            "more",
+            "outage",
+            "request"
+          ],
+          "passage_id": "KB-1005",
+          "reason": "lexical: more, outage, request; topic aliases: deadline, outage",
+          "score": 6.5794,
+          "title": "KB-1005 — How to Request a Service-Outage Credit"
+        }
+      ],
+      "timestamp": "14:13"
+    }
+  ]
+}

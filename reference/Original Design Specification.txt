@@ -1,0 +1,165 @@
+# Policy-Grounded Agent Workflow Prototype — Design Specification
+
+**Date:** October 11, 2026  
+**Deliverable:** `policy-grounded-agent-prototype.zip`  
+**Runtime:** Python 3.10+ with an offline default and an optional OpenAI-backed language layer
+
+## 1. Purpose and success criteria
+
+Build a runnable prototype that replays the supplied NimbusCare conversation and demonstrates three behaviors:
+
+1. It selects the most specific applicable policy before calculating a credit.
+2. It shows which policy rule and knowledge-base article support each material reply.
+3. It declines, requests clarification, or escalates when the supplied evidence does not support an answer or approval.
+
+The prototype succeeds when a reviewer can unpack `agent_prototype.zip`, run one documented command without an API key, and inspect a chronological trace for the supplied conversation. The trace must calculate an $82.50 service-outage credit, must not apply the general $75 limit to that credit, must state the 30-day request deadline, and must not invent an answer about tax or surcharge recalculation.
+
+## 2. Source authority and policy hierarchy
+
+The three supplied documents have different roles:
+
+- The billing policy is the authoritative decision source for eligibility, calculations, and approval thresholds.
+- The knowledge-base excerpt supplies operational guidance and customer-facing support for policy decisions.
+- The transcript supplies conversation facts. Customer and agent statements are evidence about the case, not policy authority.
+
+The engine applies rules in this order:
+
+1. Classify the request and identify the disputed item.
+2. Select a specific policy when its conditions match. Rule 3 governs a NOC-confirmed service outage and takes precedence over the general Rule 2 credit policy.
+3. Calculate under the selected policy only. Rules 2 and 3 are never blended.
+4. Apply cross-cutting approval controls in Rules 4 and 5, including unverifiable tickets, repeat disputes, and fraud indicators.
+5. Validate each proposed factual claim against retrieved source text before releasing the reply.
+
+The difficult hierarchy case is deliberate: an outage credit may exceed $75 without Rule 2 escalation, but Rule 4(b), repeat-dispute review, and fraud review still apply.
+
+## 3. Architecture
+
+The workflow is hybrid: a language layer converts free text into a constrained structured interpretation, while a deterministic policy layer owns all consequential decisions.
+
+```text
+Transcript events
+  -> turn-by-turn fact state
+  -> language layer: intent + entities + retrieval query
+  -> source retriever: policy and KB passages
+  -> deterministic policy engine
+  -> claim/evidence validator
+  -> response renderer and audit trace
+```
+
+### Language layer
+
+The language layer returns structured fields only: intent, referenced charge, dates, amount, outage ticket, and search terms. It cannot decide eligibility, select a final credit amount, or approve issuance.
+
+Two adapters implement the same interface:
+
+- `OfflineLanguageAdapter` is the default. It uses deterministic phrase and value extraction so the supplied demo and tests require no credentials or network.
+- `OpenAILanguageAdapter` is optional and enabled explicitly when an API key and model are supplied. It may improve interpretation of paraphrases, but its output passes through schema validation and the same deterministic policy engine. If it fails or returns invalid data, the run reports the failure and falls back to the offline adapter.
+
+The README will clearly label offline mode as the reproducible evaluation path and optional LLM mode as an integration example.
+
+### Source ingestion and retrieval
+
+At startup, the loader reads the included Markdown policy and KB files. It splits the policy by numbered rule and the KB by article heading, preserving source ID, title, and exact source text. Retrieval scores passages using normalized token overlap plus explicit aliases such as `refund limit -> Rule 2 / KB-1002` and `outage -> Rule 3 / KB-1004 / KB-1005`.
+
+Retrieval returns ranked candidate passages. The policy engine may use only passages whose IDs are permitted for the classified intent. This prevents an irrelevant but lexically similar article from becoming decision authority.
+
+### Conversation state
+
+The replay processes messages in timestamp order. Facts become available only after the turn that states them. The state records account verification, disputed item, monthly recurring charge, outage start and end, full outage days, ticket ID and verification status, request date, repeat-dispute status, and fraud status.
+
+Unknown values remain `unknown`; they are not converted to `false`. This matters because the supplied transcript does not establish repeat-dispute or fraud status. The workflow may calculate the apparent outage credit but must label issuance as pending those checks.
+
+### Deterministic policy engine
+
+For the supplied case, the engine evaluates:
+
+- A specific recurring charge and a request within 60 days satisfy the general dispute intake requirements.
+- Ticket `OUT-58823` confirms an 11-day outage, longer than four consecutive hours.
+- The October 5 request is 14 calendar days after the September 21 resolution and therefore within Rule 3's 30-day deadline.
+- Credit = `($225.00 / 30) * 11 = $82.50`, rounded to cents using decimal arithmetic.
+- Rule 2's $75 ceiling does not apply.
+- The $82.50 amount does not exceed $300 and 11 days does not exceed 30 days.
+- Issuance remains pending until repeat-dispute and fraud status are checked.
+
+Boundary semantics are exact: an outage must be longer than four hours; an amount must be above $300 to trigger the amount threshold; and an outage must exceed 30 consecutive days to trigger the duration threshold.
+
+### Claim/evidence validation
+
+Every material claim is represented before rendering as `{claim, support_ids, status}`. A claim is `grounded` only if at least one retrieved passage directly supports it and deterministic calculations expose their inputs. Claims can also be `partially_grounded`, `unsupported`, or `requires_account_check`.
+
+Unsupported claims are never included as affirmative answers. The renderer instead explains the known part and names the missing evidence or required specialist check. For taxes and surcharges, KB-1004 supports only that the outage credit applies to the recurring plan charge. The sources do not state whether taxes and regulatory surcharges are recalculated or refunded, so the workflow must refer that question to a billing specialist without guessing.
+
+## 4. Reviewer-visible behavior
+
+The CLI accepts the three included source files and produces a readable trace plus optional JSON. The default command is designed to be simple, for example:
+
+```text
+python run.py
+```
+
+For each relevant customer question, the trace shows:
+
+- timestamp and question;
+- facts available at that moment;
+- ranked retrieved source IDs;
+- governing rule and selection reason;
+- calculation and approval checks;
+- groundedness of each material claim;
+- action (`answer`, `clarify`, or `escalate`); and
+- customer-facing reply.
+
+The expected supplied-case outcomes are:
+
+| Question | Outcome | Primary evidence |
+|---|---|---|
+| Is the refund limited to $75? | Answer that Rule 3 governs and calculate $82.50; mark issuance pending account-level checks | Rule 3, Rules 4–5, KB-1004, KB-1006–1007 |
+| Are taxes and surcharges reduced? | State that the documented credit applies to the plan charge; escalate the recalculation question | KB-1003, KB-1004 |
+| What is the deadline? | Answer 30 days after outage resolution and confirm this request is timely | Rule 3, KB-1005 |
+
+## 5. Project contents
+
+`agent_prototype.zip` will contain the runnable project at its root:
+
+```text
+README.md
+run.py
+agent/
+  models.py
+  sources.py
+  language.py
+  retrieval.py
+  policy_engine.py
+  grounding.py
+  workflow.py
+data/
+  Nimbus Wireless — Billing Dispute & Refund Policy.md
+  NimbusCare Knowledge Base — Billing & Credits Excerpt.md
+  NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt
+tests/
+  test_policy_engine.py
+  test_workflow.py
+sample_output.txt
+```
+
+The outer archive contains `agent_prototype.zip` and the one-page `design_memo.md`.
+
+## 6. Failure handling
+
+- Missing input files cause a clear startup error naming the missing path.
+- Malformed or unrecognized source sections fail closed; the workflow reports that authoritative evidence could not be loaded.
+- Invalid LLM output is rejected by schema validation and triggers the documented offline fallback.
+- Missing eligibility facts produce a clarification request.
+- Missing account-level approval facts produce a pending-check or escalation result, never an approved issuance.
+- Unsupported knowledge questions produce a scoped refusal and escalation message.
+
+No external action is performed. The prototype calculates and recommends; it does not modify a billing account.
+
+## 7. Verification and evaluation
+
+Unit tests cover policy precedence, decimal calculation, timing, exact threshold boundaries, unverifiable tickets, general-credit limits, repeat disputes, fraud flags, unsupported questions, and chronological fact isolation. An end-to-end test replays Dana's transcript and asserts the three expected outcomes and cited sources.
+
+The design memo will propose a versioned evaluation set with supported, ambiguous, adversarial, and out-of-scope questions. Core metrics will be policy-selection accuracy, instruction-adherence rate, grounded-claim precision, unsupported-claim rate, correct-escalation recall, and answer coverage. A hallucination is any externally checkable claim lacking direct supplied evidence or a transparent deterministic derivation. Releases should require zero unsupported consequential claims on a high-risk billing test set, while separately tracking unnecessary escalations.
+
+## 8. Non-goals
+
+This prototype does not connect to live Nimbus account, NOC, billing, or credit-issuance systems; implement a vector database; provide a graphical interface; or claim production security and scale. It demonstrates the policy, evidence, reasoning, and escalation controls required by the supplied scenario.

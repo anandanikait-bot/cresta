@@ -1,0 +1,245 @@
+from __future__ import annotations
+
+import re
+from calendar import month_name
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta
+from decimal import Decimal, InvalidOperation
+from typing import Any
+
+from .calculators import outage_credit
+from .models import MaterialClaim, Passage
+
+
+@dataclass(frozen=True)
+class ClaimDraft:
+    claim_type: str
+    text: str
+    support_ids: list[str]
+    derived_inputs: dict[str, Any] = field(default_factory=dict)
+
+
+def validate_claim(draft: ClaimDraft, evidence: dict[str, Passage]) -> MaterialClaim:
+    ids = tuple(dict.fromkeys(draft.support_ids))
+    available = {sid: evidence[sid] for sid in ids if sid in evidence}
+    supported = False
+    status = "unsupported"
+    if draft.claim_type == "outage_amount":
+        try:
+            charge = Decimal(str(draft.derived_inputs["monthly_recurring_charge"]))
+            days = int(draft.derived_inputs["full_outage_days"])
+            claimed = Decimal(str(draft.derived_inputs["amount"]))
+            recomputed = outage_credit(charge, days)
+            start = datetime.fromisoformat(str(draft.derived_inputs["outage_start"]))
+            end = datetime.fromisoformat(str(draft.derived_inputs["outage_end"]))
+            transcript_support = [p for p in available.values() if p.source_kind == "transcript" and p.passage_id.startswith("TRANSCRIPT-") and p.passage_id != "TRANSCRIPT-METADATA"]
+
+            def mentions(value: datetime, text: str) -> bool:
+                month_day = re.search(rf"\b{month_name[value.month]}\s+{value.day}(?:st|nd|rd|th)?\b", text, re.IGNORECASE)
+                hour = value.hour % 12 or 12
+                ampm = "AM" if value.hour < 12 else "PM"
+                time = re.search(rf"\b{hour}(?::{value.minute:02d})?\s*{ampm}\b", text, re.IGNORECASE)
+                return bool(month_day and time)
+
+            facts_supported = any(f"${charge:.2f}" in p.text and mentions(start, p.text) and mentions(end, p.text) for p in transcript_support)
+            duration = end - start
+            derived_days_match = duration >= timedelta() and duration.days == days
+            supported = "RULE-3" in available and claimed == recomputed and facts_supported and derived_days_match and duration > timedelta(hours=4)
+        except (KeyError, InvalidOperation, ValueError, TypeError, OverflowError):
+            supported = False
+    elif draft.claim_type == "tax_recalculation_unknown":
+        supported = {"KB-1003", "KB-1004"}.issubset(available)
+        status = "partially_grounded" if supported else "unsupported"
+    elif draft.claim_type == "outage_policy_selection":
+        if {"RULE-3", "KB-1004"}.issubset(available):
+            policy = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
+            kb = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            claim = draft.text.lower()
+            supported = (
+                re.search(r"longer than\s+4 consecutive hours", policy) is not None
+                and re.search(r"within\s+30 calendar days", policy) is not None
+                and "not capped by" in policy
+                and "not limited by" in kb
+                and "$75" in claim
+                and ("not capped" in claim or "not limited" in claim)
+                and "rule 2" in claim
+            )
+    elif draft.claim_type == "outage_eligibility":
+        if {"RULE-3", "KB-1004"}.issubset(available):
+            rule3 = re.sub(r"[*_`]", "", available["RULE-3"].text).lower()
+            kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            claim = draft.text.lower()
+            supported = all((
+                re.search(r"longer than\s+4 consecutive hours", rule3) is not None,
+                re.search(r"within\s+30 calendar days", rule3) is not None,
+                re.search(r"more than\s+4 consecutive hours", kb4) is not None,
+                re.search(r"within 30 days of the outage being resolved", kb4) is not None,
+                "noc" in claim,
+                "4 consecutive hours" in claim,
+                "30 calendar days" in claim,
+                "resolution" in claim,
+            ))
+    elif draft.claim_type == "outage_approval_conditions":
+        required = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}
+        if required.issubset(available):
+            rule4 = re.sub(r"[*_`]", "", available["RULE-4"].text).lower()
+            rule5 = re.sub(r"[*_`]", "", available["RULE-5"].text).lower()
+            kb6 = re.sub(r"[*_`]", "", available["KB-1006"].text).lower()
+            kb7 = re.sub(r"[*_`]", "", available["KB-1007"].text).lower()
+            claim = draft.text.lower()
+            policy_supported = all((
+                re.search(r"service-outage credit.*?exceeds\s+\$300", rule4, re.DOTALL),
+                re.search(r"outage exceeds\s+30 consecutive days", rule4),
+                "cannot be verified" in rule4,
+                re.search(r"second billing dispute.*?within\s+90 days.*?prior resolved dispute", rule4, re.DOTALL),
+                "fraud indicators are present" in rule4,
+                "tier 2 billing specialist" in rule4,
+                "service-outage credit (kb-1004) exceeds $300.00" in kb6,
+                "outage exceeds 30 consecutive days" in kb6,
+                "second dispute within 90 days of a prior resolved dispute" in kb6,
+                "within 90 days of a previous resolved dispute" in kb7,
+                "fraud indicators are present" in kb7,
+            ))
+            claim_supported = all((
+                "$300" in claim,
+                "30 consecutive days" in claim,
+                "cannot be verified" in claim,
+                "90 days" in claim and "prior resolved dispute" in claim,
+                "fraud indicator" in claim,
+                "tier 2" in claim,
+            ))
+            supported = bool(policy_supported and claim_supported)
+    elif draft.claim_type == "repeat_fraud_policy":
+        required = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}
+        if required.issubset(available):
+            rule5 = re.sub(r"[*_`]", "", available["RULE-5"].text).lower()
+            kb7 = re.sub(r"[*_`]", "", available["KB-1007"].text).lower()
+            claim = draft.text.lower()
+            supported = all((
+                "second billing dispute within 90 days" in rule5,
+                "prior resolved dispute" in rule5,
+                "flagged fraud indicator" in rule5,
+                "tier 2 billing specialist" in rule5,
+                "within 90 days of a previous resolved dispute" in kb7,
+                "fraud indicators are present" in kb7,
+                "second dispute" in claim or "second billing dispute" in claim,
+                "90 days" in claim,
+                "prior resolved dispute" in claim,
+                "fraud" in claim,
+                "tier 2" in claim,
+            ))
+    elif draft.claim_type == "dispute_policy":
+        required = {"RULE-1", "KB-1001"}
+        if required.issubset(available):
+            rule1 = re.sub(r"[*_`]", "", available["RULE-1"].text).lower()
+            kb1 = re.sub(r"[*_`]", "", available["KB-1001"].text).lower()
+            claim = draft.text.lower()
+            supported = all((
+                "60 calendar days" in rule1,
+                "tier 2 billing specialist sign-off" in rule1,
+                "not guaranteed resolution" in rule1,
+                "specific line item or charge" in rule1,
+                "specific charge" in kb1,
+                "60 calendar days" in claim,
+                "tier 2" in claim,
+                "not guaranteed" in claim,
+                "specific invoice charge" in claim or "specific charge" in claim,
+            ))
+            elapsed = draft.derived_inputs.get("elapsed_days")
+            if elapsed is not None:
+                match = re.search(r"within\s+(\d+) calendar days", rule1)
+                try:
+                    days = int(elapsed)
+                    window = int(match.group(1)) if match else -1
+                    expected = "within" if 0 <= days <= window else "outside"
+                    supported = supported and window >= 0 and f"{days}-day interval is {expected}" in claim
+                except (TypeError, ValueError, OverflowError):
+                    supported = False
+    elif draft.claim_type == "deadline":
+        supported = {"RULE-3", "KB-1005"}.issubset(available) and bool(draft.derived_inputs.get("request_deadline"))
+        deadline_value = str(draft.derived_inputs.get("request_deadline", ""))
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", deadline_value):
+            try:
+                resolution = date.fromisoformat(str(draft.derived_inputs["resolution_date"]))
+                request = date.fromisoformat(str(draft.derived_inputs["request_date"]))
+                deadline = date.fromisoformat(deadline_value)
+                policy = re.sub(r"[*_`]", "", available["RULE-3"].text)
+                window_match = re.search(r"within\s+(\d+)\s+calendar days", policy, re.IGNORECASE)
+                resolution_evidence = any(
+                    p.source_kind == "transcript" and p.passage_id.startswith("TRANSCRIPT-") and p.passage_id != "TRANSCRIPT-METADATA"
+                    and re.search(rf"\b{month_name[resolution.month]}\s+{resolution.day}(?:st|nd|rd|th)?\b", p.text, re.IGNORECASE)
+                    for p in available.values()
+                )
+                metadata = available.get("TRANSCRIPT-METADATA")
+                request_supported = metadata is not None and request.strftime("%B %d, %Y").replace(" 0", " ").lower() in metadata.text.lower()
+                supported = supported and resolution_evidence and request_supported and bool(window_match)
+                if window_match:
+                    supported = supported and deadline == resolution + timedelta(days=int(window_match.group(1)))
+                supported = supported and draft.derived_inputs.get("request_day_delta") == (request - resolution).days
+            except (KeyError, ValueError, OverflowError):
+                supported = False
+    elif draft.claim_type == "account_check_pending":
+        supported = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}.issubset(available)
+        status = "requires_account_check" if supported else "unsupported"
+    elif draft.claim_type == "plan_charge_scope":
+        if "KB-1004" in available:
+            source = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
+            claim = draft.text.lower()
+            supported = "recurring plan charge" in source and "recurring plan charge" in claim
+    elif draft.claim_type == "general_goodwill":
+        if {"RULE-2", "KB-1002"}.issubset(available):
+            policy = re.sub(r"[*_`]", "", available["RULE-2"].text).lower()
+            kb = re.sub(r"[*_`]", "", available["KB-1002"].text).lower()
+            claim = draft.text.lower()
+            claim_amounts = {Decimal(value) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", claim)}
+            source_amounts = {Decimal(value) for source in (policy, kb) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", source)}
+            supported = (
+                "confirmed" in policy and "billing error" in policy and "rolling 12-month period" in policy
+                and "confirmed billing errors" in kb and "rolling 12-month period" in kb
+                and claim_amounts.issubset(source_amounts)
+                and ("tier 2" not in claim or "tier 2" in policy and "tier 2" in kb)
+            )
+    elif draft.claim_type == "billing_dispute_process":
+        supported = "KB-1001" in available
+    elif draft.claim_type.startswith("kb:"):
+        passage_id = draft.claim_type.removeprefix("kb:")
+        passage = available.get(passage_id)
+        if passage is not None:
+            source = re.sub(r"[*_`]", "", passage.text).lower()
+            claim = draft.text.lower()
+            claim_amounts = {Decimal(value) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", claim)}
+            source_amounts = {Decimal(value) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", source)}
+            supported = claim_amounts.issubset(source_amounts)
+            if passage_id == "KB-1008":
+                if "retention" in claim or "loyalty" in claim:
+                    supported = supported and "retention" in source
+                if "considering cancellation" in claim or "cancellation" in claim:
+                    supported = supported and "actively considering cancellation" in source
+                if "customer retention queue" in claim:
+                    supported = supported and "customer retention queue" in source
+                if "billing dispute" in claim or "outage" in claim:
+                    separate_claim = any(term in claim for term in ("separate", "not a substitute", "cannot resolve", "cannot be used to resolve"))
+                    supported = supported and separate_claim and "not a substitute for a billing dispute resolution" in source and "cannot be used to resolve" in source
+            elif passage_id == "KB-1009":
+                supported = supported and ("device protection" not in claim or "device protection" in source)
+                supported = supported and ("device protection team" not in claim or "device protection team" in source)
+            elif passage_id == "KB-1010":
+                supported = supported and ("plan change" not in claim or "mid-cycle plan change" in source)
+                supported = supported and ("prorat" not in claim or "prorat" in source)
+                supported = supported and ("formula" not in claim or "monthly charge ÷ 30" in source and "days active" in source)
+                if "outage" in claim:
+                    supported = supported and "unrelated to service-outage credits" in source and "kb-1004" in claim and "separate" in claim
+    elif draft.claim_type == "source_conflict":
+        status = "partially_grounded" if len(available) >= 2 else "unsupported"
+        supported = len(available) >= 2
+    if supported and status == "unsupported":
+        status = "grounded"
+    citations = tuple({
+        "id": passage.passage_id,
+        "title": passage.title,
+        "source_file": passage.source_file,
+        "line_start": passage.line_start,
+        "line_end": passage.line_end,
+        "excerpt": passage.excerpt(300),
+    } for passage in available.values())
+    return MaterialClaim(draft.claim_type, draft.text, ids, status, draft.derived_inputs, citations)

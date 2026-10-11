@@ -1,0 +1,32 @@
+NimbusCare Chat Transcript
+Channel: Web Chat — Billing Support
+Session ID: CHT-2026-10-05-118827
+Date: October 5, 2026
+Customer: Dana Whitfield
+Account Number: NMB-7745213
+Plan: Nimbus Family Unlimited (3 lines) — $225.00/month recurring charge
+Agent: Jordan R., NimbusCare Billing
+
+[14:02] Customer (Dana Whitfield): Hi, I need to dispute a charge on my latest bill. My service was out for almost two weeks last month and I still got charged the full $225.00 like nothing happened.
+
+[14:03] Agent (Jordan R.): Hi Dana, thanks for reaching out — I'm sorry to hear about the outage. I can take a look at this. First I just need to verify your account: can you confirm your account number and the last 4 digits of the card on file?
+
+[14:04] Customer (Dana Whitfield): Account is NMB-7745213, and the card ending is 4471.
+
+[14:05] Agent (Jordan R.): Great, thanks, that matches — you're verified. Can you confirm the exact dates you were without service, and which charge on the bill you're disputing?
+
+[14:06] Customer (Dana Whitfield): Service went down on September 10th at 6 AM and wasn't back until September 21st at 6 AM — all three lines, totally dead, no calls or data. I'm disputing the full $225.00 recurring charge on the invoice dated October 1st.
+
+[14:08] Agent (Jordan R.): Thanks for those details — let me pull up our outage records for your service address around those dates... Okay, I do see a confirmed outage ticket, OUT-58823, logged for your address covering September 10, 6:00 AM through September 21, 6:00 AM. Give me a moment to work out what that means for a credit on your account and I'll come back with a number.
+
+[14:09] Customer (Dana Whitfield): Okay, but isn't your refund limit only $75? I saw something like that in your terms once. So you can only give me $75 back for this, right?
+
+[14:10] Agent (Jordan R.): That's a fair thing to ask — I don't want to just quote you $75 without double-checking whether that's actually the right limit to apply to an outage like this versus a regular billing credit. Let me confirm that before I give you a final number.
+
+[14:11] Customer (Dana Whitfield): Sure, no rush. While you're looking into that — does whatever credit I end up getting also reduce the taxes and regulatory surcharges I paid during those eleven days, or is it only applied against the plan charge itself?
+
+[14:12] Agent (Jordan R.): Good question, and I'd rather check than guess on that one too — I'll look into whether that's something we have guidance on and let you know.
+
+[14:13] Customer (Dana Whitfield): Sounds good. One more thing while I have you — how long do I actually have to submit a request like this after an outage gets fixed? Just want to make sure I'm not about to miss some deadline.
+
+[14:14] Agent (Jordan R.): That's a good one to nail down too. Let me pull everything together — the credit amount and which policy it falls under, the taxes/surcharges question, and the deadline for submitting a request like this — and I'll follow up with complete, confirmed answers on all three rather than giving you a partial answer now.
