@@ -52,7 +52,18 @@ def _render_trace(trace: Any, index: int | None = None) -> str:
     else:
         rows.append("  - no matching passage")
     decision = trace.decision
-    rows.append(f"Decision: {decision.status}; selected rule: {decision.selected_rule_id or 'none'}")
+    rows.append(f"Decision: {decision.status}; selected rule: {decision.selected_rule_id or 'none'}; issuance authorized: {'yes' if decision.issuance_authorized else 'no'}")
+    for index, extra in enumerate(trace.additional_decisions, 1):
+        rows.append(
+            f"Separate decision {index}: {extra.status}; selected rule: {extra.selected_rule_id or 'none'}; "
+            f"issuance authorized: {'yes' if extra.issuance_authorized else 'no'}"
+        )
+        if extra.reason:
+            rows.append(f"Separate decision reason: {extra.reason}")
+        if extra.credit_amount is not None:
+            rows.append(f"Separate calculated amount: ${extra.credit_amount:.2f}")
+        if extra.unresolved_checks:
+            rows.append("Separate pending checks: " + ", ".join(extra.unresolved_checks))
     if decision.reason:
         rows.append(f"Reason: {decision.reason}")
     if decision.calculations:
@@ -65,7 +76,19 @@ def _render_trace(trace: Any, index: int | None = None) -> str:
         rows.append("Excluded controls: " + "; ".join(decision.exclusions))
     rows.append("Claim grounding:")
     for claim in trace.claims:
-        citations = ", ".join(claim.support_ids) if claim.support_ids else "no supporting passage"
+        citation_details = {item.get("id"): item for item in claim.citations}
+        rendered_citations = []
+        for source_id in claim.support_ids:
+            citation = citation_details.get(source_id)
+            if citation is None:
+                rendered_citations.append(source_id)
+            else:
+                source_file = citation.get("source_file", "")
+                start = citation.get("line_start")
+                end = citation.get("line_end")
+                location = f"{source_file}:{start}-{end}" if source_file and start is not None and end is not None else source_file
+                rendered_citations.append(f"{source_id} [{location}]" if location else source_id)
+        citations = ", ".join(rendered_citations) if rendered_citations else "no supporting passage"
         rows.append(f"  - [{claim.status}] {claim.text} (sources: {citations})")
     rows.append(f"Action: {trace.action.value}")
     rows.append("Customer-facing response:")

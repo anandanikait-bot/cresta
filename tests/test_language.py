@@ -22,6 +22,18 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual(interpret("Does the $75 refund cap apply if my internet stops working?").intent, "service_outage_policy")
         self.assertEqual(interpret("Can I dispute a tax charge on my invoice?").intent, "file_dispute")
 
+    def test_combined_invoice_dispute_and_outage_credit_keeps_both_intents(self):
+        result = interpret("I want to dispute the invoice charge and also request a service-outage credit.")
+        self.assertEqual(result.intent, "combined_dispute_and_outage")
+
+    def test_combined_request_routing_handles_natural_outage_credit_paraphrases(self):
+        for question in (
+            "Can I dispute an invoice charge and get a credit for my internet outage?",
+            "I want to dispute this bill and request a credit for the outage.",
+        ):
+            with self.subTest(question=question):
+                self.assertEqual(interpret(question).intent, "combined_dispute_and_outage")
+
     def test_ambiguous_coverage_requests_clarification_intent(self):
         result = interpret("Can I get compensation for 11 days without coverage?")
         self.assertTrue(result.ambiguity)

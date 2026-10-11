@@ -191,6 +191,16 @@ class Decision:
     unresolved_checks: tuple[str, ...] = ()
     calculations: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def issuance_authorized(self) -> bool:
+        """True only when an outage/goodwill credit is explicitly ready for frontline action."""
+        return (
+            self.selected_rule_id in {"RULE-2", "RULE-3"}
+            and self.status == "eligible_for_frontline_action"
+            and self.credit_amount is not None
+            and self.credit_amount > Decimal("0.00")
+        )
+
 
 @dataclass(frozen=True)
 class MaterialClaim:
@@ -216,6 +226,7 @@ class TurnTrace:
     answer: str
     provenance_notes: tuple[str, ...] = ()
     evidence_ledger: tuple[dict[str, Any], ...] = ()
+    additional_decisions: tuple[Decision, ...] = ()
 
     @property
     def evidence_ids(self) -> list[str]:
@@ -223,5 +234,8 @@ class TurnTrace:
 
     def to_dict(self) -> dict[str, Any]:
         data = jsonable(self)
+        data["decision"]["issuance_authorized"] = self.decision.issuance_authorized
+        for raw, decision in zip(data.get("additional_decisions", []), self.additional_decisions):
+            raw["issuance_authorized"] = decision.issuance_authorized
         data["evidence_ids"] = self.evidence_ids
         return data

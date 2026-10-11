@@ -26,7 +26,8 @@
   "turns": [
     {
       "action": "ANSWER",
-      "answer": "This is a separate Service-Outage Credit under Rule 3, not the general $75 goodwill cap. Using the reported $225.00 monthly charge and 11 full outage days, ($225.00 ÷ 30) × 11 = $82.50. That amount is not limited by Rule 2's $75 cap. The transcript records an agent-reported NOC lookup; this replay does not independently access NOC. Required checks remain pending (prior_resolved_dispute, fraud_indicator); no credit has been issued.",
+      "additional_decisions": [],
+      "answer": "This is a separate Service-Outage Credit under Rule 3, not the general $75 goodwill cap. Using the reported $225.00 monthly charge and 11 full outage days, ($225.00 ÷ 30) × 11 = $82.50. That amount is not limited by Rule 2's $75 cap. The transcript records an agent-reported NOC lookup; this replay does not independently access NOC. Required checks remain pending (prior_resolved_dispute, fraud_indicator, independent_ticket_verification); no credit has been issued.",
       "claims": [
         {
           "citations": [
@@ -185,12 +186,14 @@
         "exclusions": [
           "RULE-2 cumulative $75 limit does not apply to a RULE-3 outage credit"
         ],
+        "issuance_authorized": false,
         "reason": "The specific service-outage track governs; Rule 2's $75 goodwill cap is excluded.",
         "selected_rule_id": "RULE-3",
         "status": "calculated_pending_checks",
         "unresolved_checks": [
           "prior_resolved_dispute",
-          "fraud_indicator"
+          "fraud_indicator",
+          "independent_ticket_verification"
         ]
       },
       "evidence_ids": [
@@ -686,6 +689,7 @@
     },
     {
       "action": "ESCALATE",
+      "additional_decisions": [],
       "answer": "The documented outage credit applies to the recurring plan charge. Taxes and regulatory surcharges are listed separately. The supplied guidance does not specify whether those items are recalculated or refunded after an outage credit, so a billing specialist must confirm that part; I can't answer yes or no from these sources.",
       "claims": [
         {
@@ -745,6 +749,7 @@
         "credit_amount": null,
         "deadline": null,
         "exclusions": [],
+        "issuance_authorized": false,
         "reason": "Informational answer; no account action is available in this prototype.",
         "selected_rule_id": null,
         "status": "informational",
@@ -965,7 +970,8 @@
     },
     {
       "action": "ANSWER",
-      "answer": "A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely.",
+      "additional_decisions": [],
+      "answer": "A service-outage credit request is due within 30 calendar days after resolution. For the reported September 21, 2026 resolution, the calculated deadline is October 21, 2026. The request dated October 5, 2026 is 14 days after resolution and timely.",
       "claims": [
         {
           "citations": [
@@ -1020,7 +1026,7 @@
             "TRANSCRIPT-14:06",
             "TRANSCRIPT-METADATA"
           ],
-          "text": "A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely."
+          "text": "A service-outage credit request is due within 30 calendar days after resolution. For the reported September 21, 2026 resolution, the calculated deadline is October 21, 2026. The request dated October 5, 2026 is 14 days after resolution and timely."
         }
       ],
       "decision": {
@@ -1032,6 +1038,7 @@
         "credit_amount": null,
         "deadline": "2026-10-21",
         "exclusions": [],
+        "issuance_authorized": false,
         "reason": "Request timing uses calendar dates from the outage resolution date.",
         "selected_rule_id": "RULE-3",
         "status": "eligible",

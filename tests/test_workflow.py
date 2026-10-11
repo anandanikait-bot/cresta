@@ -1,5 +1,7 @@
 from pathlib import Path
 from dataclasses import replace
+from datetime import date, timedelta
+from decimal import Decimal
 import json
 import subprocess
 import sys
@@ -32,7 +34,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(traces[0].decision.selected_rule_id, "RULE-3")
         self.assertEqual(traces[0].decision.credit_amount, __import__("decimal").Decimal("82.50"))
         self.assertEqual(traces[0].decision.status, "calculated_pending_checks")
-        self.assertEqual(traces[0].decision.unresolved_checks, ("prior_resolved_dispute", "fraud_indicator"))
+        self.assertEqual(traces[0].decision.unresolved_checks, ("prior_resolved_dispute", "fraud_indicator", "independent_ticket_verification"))
         self.assertTrue({"RULE-3", "KB-1004", "RULE-4", "RULE-5", "KB-1006", "KB-1007"}.issubset(set(traces[0].evidence_ids)))
         self.assertFalse(traces[0].decision.calculations["outage_amount_tier2_triggered"])
         self.assertFalse(traces[0].decision.calculations["outage_duration_tier2_triggered"])
@@ -66,7 +68,11 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("30 calendar days", trace.answer)
 
     def test_logs_and_json_do_not_expose_account_or_card_details(self):
-        rendered = json.dumps([x.to_dict() for x in workflow().replay()])
+        traces = workflow().replay()
+        rendered = json.dumps([x.to_dict() for x in traces])
+        self.assertFalse(traces[0].to_dict()["decision"]["issuance_authorized"])
+        from run import _render_trace
+        self.assertRegex(_render_trace(traces[0]), r"RULE-3 \[Nimbus Wireless — Billing Dispute & Refund Policy\.md:\d+-\d+\]")
         self.assertNotIn("NMB-7745213", rendered)
         self.assertNotIn("4471", rendered)
 
@@ -99,6 +105,56 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("separate", trace.answer.lower())
         self.assertEqual({"RULE-1", "KB-1001", "RULE-3", "KB-1004"}, set(trace.evidence_ids))
         self.assertIsNone(trace.decision.credit_amount)
+
+    def test_combined_invoice_dispute_and_outage_credit_evaluates_both_rules(self):
+        from agent.state import snapshots_for_questions
+        app = workflow()
+        facts = snapshots_for_questions(app.sources)[0][1]
+        trace = app.answer(
+            "I want to dispute the invoice charge and also request a service-outage credit.",
+            facts,
+        )
+        self.assertEqual(trace.intent, "combined_dispute_and_outage")
+        self.assertEqual(trace.decision.selected_rule_id, "RULE-1")
+        self.assertEqual(trace.decision.status, "eligible")
+        self.assertEqual(len(trace.additional_decisions), 1)
+        outage = trace.additional_decisions[0]
+        self.assertEqual(outage.selected_rule_id, "RULE-3")
+        self.assertEqual(outage.credit_amount, __import__("decimal").Decimal("82.50"))
+        self.assertNotEqual(outage.status, "eligible_for_frontline_action")
+        self.assertIn("invoice dispute", trace.answer.lower())
+        self.assertIn("outage credit", trace.answer.lower())
+        self.assertIn("separate", trace.answer.lower())
+        from run import _render_trace
+        rendered = _render_trace(trace)
+        self.assertIn("Separate decision 1: calculated_pending_checks", rendered)
+        self.assertIn("issuance authorized: no", rendered)
+        self.assertIn("Separate calculated amount: $82.50", rendered)
+
+    def test_combined_late_dispute_cannot_be_bypassed_by_goodwill_fallback(self):
+        from agent.state import snapshots_for_questions
+        app = workflow()
+        facts = snapshots_for_questions(app.sources)[0][1]
+        facts = replace(
+            facts,
+            invoice_statement_date=date(2026, 7, 1),
+            outage_end=facts.outage_start + timedelta(hours=4),
+            billing_error_confirmed=Truth.TRUE,
+            credit_history=(),
+            requested_goodwill_amount=Decimal("25.00"),
+            fraud_indicator=Truth.FALSE,
+            prior_resolved_dispute=Truth.FALSE,
+        )
+        trace = app.answer(
+            "Can I dispute the invoice charge and get a credit for my internet outage?",
+            facts,
+        )
+        self.assertEqual(trace.intent, "combined_dispute_and_outage")
+        self.assertEqual(trace.decision.status, "needs_tier2_approval")
+        self.assertEqual(trace.additional_decisions[0].selected_rule_id, "RULE-2")
+        self.assertEqual(trace.additional_decisions[0].status, "needs_tier2_approval")
+        self.assertIn("late_dispute", trace.additional_decisions[0].approval_reasons)
+        self.assertFalse(trace.additional_decisions[0].issuance_authorized)
 
     def test_outage_limit_question_without_demo_context_is_answered_as_policy_info(self):
         trace = workflow().answer("Does the $75 cap apply to a confirmed outage credit?")
@@ -228,6 +284,22 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("$50", trace.answer)
         self.assertEqual(trace.claims[0].status, "grounded")
 
+    def test_failed_claim_keeps_only_supported_partial_response(self):
+        app = workflow()
+        altered_articles = tuple(
+            replace(article, text=article.text.replace(
+                "not a substitute for a billing dispute resolution",
+                "a substitute for a billing dispute resolution",
+            )) if article.passage_id == "KB-1008" else article
+            for article in app.sources.articles
+        )
+        altered_sources = replace(app.sources, articles=altered_articles)
+        trace = BillingWorkflow(altered_sources, app.rules).answer("Does a retention credit replace an outage refund?")
+        self.assertIn("Rule 3", trace.answer)
+        self.assertIn("not adequately support", trace.answer)
+        self.assertNotIn("not a substitute", trace.answer.lower())
+        self.assertIn("unsupported", [claim.status for claim in trace.claims])
+
     def test_optional_language_payload_schema_is_strict_and_falls_back(self):
         trace = workflow().answer("Will regulatory levies change after a service interruption allowance?")
         self.assertEqual(trace.intent, "tax_recalculation")
@@ -283,8 +355,20 @@ class WorkflowTests(unittest.TestCase):
         trace = workflow().answer("What is the device protection deductible?")
         self.assertIn("$25–$199", trace.answer)
         self.assertIn("depending on device tier", trace.answer.lower())
+        self.assertLess(len(trace.answer), 110)
+        self.assertNotIn("claim limits", trace.answer.lower())
         self.assertEqual(trace.evidence_ids, ["KB-1009"])
         self.assertEqual(trace.claims[0].status, "grounded")
+
+    def test_dispute_document_question_does_not_invent_supporting_paperwork(self):
+        trace = workflow().answer("What documents do I need to dispute a charge?")
+        self.assertEqual(trace.action, Action.ANSWER)
+        self.assertIn("does not specify", trace.answer.lower())
+        self.assertIn("supporting documents", trace.answer.lower())
+        self.assertIn("date, amount, and description", trace.answer.lower())
+        self.assertNotIn("receipt", trace.answer.lower())
+        process_claim = next(claim for claim in trace.claims if claim.claim_type == "billing_dispute_process")
+        self.assertEqual(process_claim.status, "grounded")
 
     def test_internet_outage_cap_question_explains_conditional_rule_three(self):
         trace = workflow().answer("Does the $75 refund cap apply if my internet stops working?")
@@ -302,6 +386,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("you are eligible", trace.answer.lower())
         self.assertIn("confirmed billing error", trace.answer.lower())
         self.assertIn("credit history", trace.answer.lower())
+        self.assertNotIn("60 calendar days", trace.answer.lower())
 
     def test_agent_reported_ticket_does_not_establish_approval(self):
         facts = CaseFacts(ticket_id="OUT-58823", ticket_status=TicketStatus.AGENT_REPORTED,
@@ -319,6 +404,15 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("reported ticket", trace.answer.lower())
         self.assertNotIn("reported ticket", trace.claims[0].text.lower())
 
+    def test_agent_confirmation_of_ticket_is_not_credit_approval(self):
+        trace = workflow().answer("My agent confirmed an outage ticket. Is my credit approved?")
+        self.assertEqual(trace.intent, "ticket_status")
+        self.assertEqual(trace.action, Action.ESCALATE)
+        self.assertIn("reported ticket", trace.answer.lower())
+        self.assertIn("independently verify", trace.answer.lower())
+        self.assertNotIn("credit is approved", trace.answer.lower())
+        self.assertEqual(trace.claims[0].status, "requires_account_check")
+
     def test_dispute_of_a_tax_line_item_stays_on_rule_one(self):
         trace = workflow().answer("Can I dispute a tax charge on my invoice?")
         self.assertEqual(trace.intent, "file_dispute")
@@ -331,6 +425,13 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("outage credit", trace.answer.lower())
         self.assertNotRegex(trace.answer.lower(), r"(?:will|are) be recalculated")
         self.assertIn("does not specify", trace.answer.lower())
+
+    def test_general_billing_adjustment_tax_refund_stays_unspecified(self):
+        trace = workflow().answer("Will regulatory fees be refunded after a general billing adjustment?")
+        self.assertNotIn("KB-1004", trace.evidence_ids)
+        self.assertIn("does not specify", trace.answer.lower())
+        self.assertIn("refunded or recalculated", trace.answer.lower())
+        self.assertNotRegex(trace.answer.lower(), r"fees will be refunded")
 
     def test_unknown_in_scope_question_uses_only_a_direct_source_sentence(self):
         trace = workflow().answer("Which items does the monthly invoice include?")

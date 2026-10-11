@@ -75,18 +75,18 @@ Retrieved evidence:
   - RULE-4 (score 2.25): ## Rule 4 — Escalation & Approval Thresholds Escalate to a **Tier 2 Billing Specialist** before issuing any credit when any of the following apply: - a. A **general** goodwill credit under Rule 2 would bring the account's rolling 12-month total above **$75.00**. - b. A **Service-Outage Credit** calculated under Rule 3 exceeds **$300.00**, or the underlying…
   - KB-1007 (score 1.65): ### KB-1007 — Repeat Disputes & Fraud Review **Category:** Escalation Rules · **Last updated:** August 20, 2026 If an account has filed a second billing dispute within 90 days of a previous *resolved* dispute, the new dispute must be handled by a Tier 2 Billing Specialist, even if the amount in question is small. The same applies if fraud indicators are pre…
   - RULE-5 (score 1.65): ## Rule 5 — Repeat Dispute & Fraud Review Regardless of which rule above would otherwise apply, any account with a second billing dispute within 90 days of a prior *resolved* dispute, or any flagged fraud indicator, must have the credit decision made by a Tier 2 Billing Specialist, not the front-line agent, even if the dollar amount is small. Front-line age…
-Decision: calculated_pending_checks; selected rule: RULE-3
+Decision: calculated_pending_checks; selected rule: RULE-3; issuance authorized: no
 Reason: The specific service-outage track governs; Rule 2's $75 goodwill cap is excluded.
 Calculation and checks: {"formula": "quantize_cents((monthly_recurring_charge / Decimal('30')) * full_outage_days)", "full_outage_days": 11, "monthly_recurring_charge": "225.00", "outage_amount_tier2_threshold": "300.00", "outage_amount_tier2_triggered": false, "outage_duration_days_tier2_threshold": 30, "outage_duration_hours": "264.00", "outage_duration_tier2_triggered": false, "request_days_after_resolution": 14, "request_deadline": "2026-10-21", "result": "82.50"}
-Unknown/pending checks: prior_resolved_dispute, fraud_indicator
+Unknown/pending checks: prior_resolved_dispute, fraud_indicator, independent_ticket_verification
 Excluded controls: RULE-2 cumulative $75 limit does not apply to a RULE-3 outage credit
 Claim grounding:
-  - [grounded] Rule 3 is the specific service-outage track and is not capped by Rule 2's $75 goodwill limit. (sources: RULE-3, KB-1004)
-  - [grounded] The calculated service-outage amount is $82.50. (sources: RULE-3, KB-1004, TRANSCRIPT-14:06, TRANSCRIPT-14:08)
-  - [requires_account_check] Account-level repeat-dispute and fraud checks are not established; no credit has been issued. (sources: RULE-4, RULE-5, KB-1006, KB-1007)
+  - [grounded] Rule 3 is the specific service-outage track and is not capped by Rule 2's $75 goodwill limit. (sources: RULE-3 [Nimbus Wireless — Billing Dispute & Refund Policy.md:24-42], KB-1004 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:38-52])
+  - [grounded] The calculated service-outage amount is $82.50. (sources: RULE-3 [Nimbus Wireless — Billing Dispute & Refund Policy.md:24-42], KB-1004 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:38-52], TRANSCRIPT-14:06 [NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt:18-18], TRANSCRIPT-14:08 [NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt:20-20])
+  - [requires_account_check] Account-level repeat-dispute and fraud checks are not established; no credit has been issued. (sources: RULE-4 [Nimbus Wireless — Billing Dispute & Refund Policy.md:43-55], RULE-5 [Nimbus Wireless — Billing Dispute & Refund Policy.md:56-58], KB-1006 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:65-78], KB-1007 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:79-85])
 Action: ANSWER
 Customer-facing response:
-This is a separate Service-Outage Credit under Rule 3, not the general $75 goodwill cap. Using the reported $225.00 monthly charge and 11 full outage days, ($225.00 ÷ 30) × 11 = $82.50. That amount is not limited by Rule 2's $75 cap. The transcript records an agent-reported NOC lookup; this replay does not independently access NOC. Required checks remain pending (prior_resolved_dispute, fraud_indicator); no credit has been issued.
+This is a separate Service-Outage Credit under Rule 3, not the general $75 goodwill cap. Using the reported $225.00 monthly charge and 11 full outage days, ($225.00 ÷ 30) × 11 = $82.50. That amount is not limited by Rule 2's $75 cap. The transcript records an agent-reported NOC lookup; this replay does not independently access NOC. Required checks remain pending (prior_resolved_dispute, fraud_indicator, independent_ticket_verification); no credit has been issued.
 
 ====================================================================================================
 Turn 2: 14:11 — Sure, no rush. While you're looking into that — does whatever credit I end up getting also reduce the taxes and regulatory surcharges I paid during those eleven days, or is it only applied against the plan charge itself?
@@ -156,11 +156,11 @@ Facts visible at this turn:
 Retrieved evidence:
   - KB-1003 (score 10.04): ### KB-1003 — Understanding Your Nimbus Wireless Bill **Category:** Account & Billing Basics · **Last updated:** July 14, 2026 Your monthly invoice includes: (1) your plan's recurring monthly charge, (2) prorated charges for any mid-cycle plan or line changes, (3) one-time device or accessory charges, (4) applicable state and local taxes and regulatory surc…
   - KB-1004 (score 7.56): ### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as: ``` (current…
-Decision: informational; selected rule: none
+Decision: informational; selected rule: none; issuance authorized: no
 Reason: Informational answer; no account action is available in this prototype.
 Claim grounding:
-  - [grounded] The documented outage credit is calculated against the recurring plan charge only. (sources: KB-1004)
-  - [partially_grounded] Taxes and regulatory surcharges are itemized separately; the supplied sources do not say whether they are recalculated or refunded after an outage credit. (sources: KB-1003, KB-1004)
+  - [grounded] The documented outage credit is calculated against the recurring plan charge only. (sources: KB-1004 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:38-52])
+  - [partially_grounded] Taxes and regulatory surcharges are itemized separately; the supplied sources do not say whether they are recalculated or refunded after an outage credit. (sources: KB-1003 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:31-37], KB-1004 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:38-52])
 Action: ESCALATE
 Customer-facing response:
 The documented outage credit applies to the recurring plan charge. Taxes and regulatory surcharges are listed separately. The supplied guidance does not specify whether those items are recalculated or refunded after an outage credit, so a billing specialist must confirm that part; I can't answer yes or no from these sources.
@@ -235,12 +235,12 @@ Retrieved evidence:
   - KB-1004 (score 7.45): ### KB-1004 — Service-Outage Credits: Eligibility & Credit Calculation **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 If Network Operations (NOC) confirms a service outage lasting **more than 4 consecutive hours** at your service address, you're eligible for a prorated **Service-Outage Credit**, calculated as: ``` (current…
   - RULE-3 (score 7.45): ## Rule 3 — Service-Outage Credit Policy (Exception to Rule 2) When Network Operations (NOC) confirms a service outage affecting the customer's service address that lasted **longer than 4 consecutive hours**, the affected lines are entitled to a **prorated Service-Outage Credit**, calculated as: ``` Service-Outage Credit = (current monthly recurring charge…
   - KB-1005 (score 6.58): ### KB-1005 — How to Request a Service-Outage Credit **Category:** Service-Outage Credit Policy · **Last updated:** September 28, 2026 1. Confirm the customer's service address and the approximate outage dates. 2. Look up the NOC outage ticket (format: `OUT-#####`) covering that address and date range. If no ticket exists, the outage cannot be verified unde…
-Decision: eligible; selected rule: RULE-3
+Decision: eligible; selected rule: RULE-3; issuance authorized: no
 Reason: Request timing uses calendar dates from the outage resolution date.
 Calculation and checks: {"deadline": "2026-10-21", "request_day_delta": 14}
 Claim grounding:
-  - [grounded] A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely. (sources: RULE-3, KB-1005, TRANSCRIPT-14:06, TRANSCRIPT-METADATA)
+  - [grounded] A service-outage credit request is due within 30 calendar days after resolution. For the reported September 21, 2026 resolution, the calculated deadline is October 21, 2026. The request dated October 5, 2026 is 14 days after resolution and timely. (sources: RULE-3 [Nimbus Wireless — Billing Dispute & Refund Policy.md:24-42], KB-1005 [NimbusCare Knowledge Base — Billing & Credits Excerpt.md:53-64], TRANSCRIPT-14:06 [NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt:18-18], TRANSCRIPT-METADATA [NimbusCare Chat Transcript — Dana Whitfield, October 5, 2026.txt:4-4])
 Action: ANSWER
 Customer-facing response:
-A service-outage credit request is due within 30 calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely.
+A service-outage credit request is due within 30 calendar days after resolution. For the reported September 21, 2026 resolution, the calculated deadline is October 21, 2026. The request dated October 5, 2026 is 14 days after resolution and timely.
 

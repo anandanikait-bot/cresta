@@ -11,6 +11,7 @@ INTENTS = {
     "service_outage_amount", "outage_deadline", "tax_recalculation", "file_dispute",
     "general_goodwill", "retention", "device_protection", "plan_change_proration",
     "mixed_retention_outage", "service_outage_policy", "repeat_fraud_policy", "ticket_status",
+    "combined_dispute_and_outage",
     "clarification", "unknown",
 }
 
@@ -54,6 +55,14 @@ def interpret(question: str, facts: CaseFacts | None = None) -> QuestionInterpre
         return QuestionInterpretation(intent, tuple(dict.fromkeys(re.findall(r"[a-z0-9$]+", normalized))), True, clarification)
     if any(phrase in normalized for phrase in ("has my credit been approved", "was my credit approved", "is my credit approved", "credit approval status")):
         intent = "ticket_status"
+    elif (
+        any(term in normalized for term in ("dispute", "challenge", "contest"))
+        and re.search(r"\b(?:invoice|statement|charge|line item|bill)\b", normalized)
+        and has_outage
+        and re.search(r"\b(?:credit|refund|compensation|compensate|allowance)\b", normalized)
+        and re.search(r"\b(?:and|also|as well as|both)\b", normalized)
+    ):
+        intent = "combined_dispute_and_outage"
     elif any(term in normalized for term in ("how do i file", "how to file", "open a dispute", "submit a billing dispute", "dispute a charge")):
         intent = "file_dispute"
     elif any(term in normalized for term in ("dispute", "challenge", "contest")) and any(term in normalized for term in ("invoice", "statement", "charge", "60 day", "60-day", "within", "after", "window", "timely", "deadline")):

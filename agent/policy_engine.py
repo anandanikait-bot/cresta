@@ -24,17 +24,27 @@ class PolicyEngine:
             return Decision("RULE-1", "eligible", reason=f"Specific disputed item is within {limit} calendar days of the statement date.", calculations={"days_since_statement": elapsed, "window_days": limit})
         return Decision("RULE-1", "needs_tier2_approval", reason=f"The request is {elapsed} days after the statement date, beyond the {limit}-day window; Tier 2 may consider it.", approval_reasons=("late_dispute",), calculations={"days_since_statement": elapsed, "window_days": limit})
 
-    def evaluate_service_outage(self, facts: CaseFacts) -> Decision:
+    def evaluate_invoice_dispute(self, facts: CaseFacts) -> Decision:
+        """Evaluate Rule 1 only when the customer is disputing an invoice charge."""
+        return self.evaluate_dispute_window(facts)
+
+    def evaluate_service_outage(self, facts: CaseFacts, invoice_dispute: Decision | None = None) -> Decision:
         if facts.ticket_status == TicketStatus.UNVERIFIABLE:
             return Decision("RULE-3", "needs_tier2_approval", reason="The outage ticket cannot be verified at request time.", approval_reasons=("unverifiable_ticket",))
         if facts.ticket_status in (TicketStatus.UNKNOWN, TicketStatus.MISSING):
             if facts.ticket_status == TicketStatus.MISSING and facts.ticket_id is None:
-                return self._fallback_to_goodwill(facts, "No NOC ticket exists; Rule 3 does not apply.")
+                return self._fallback_to_goodwill(facts, "No NOC ticket exists; Rule 3 does not apply.", invoice_dispute=invoice_dispute)
             return Decision("RULE-3", "pending_missing_facts", reason="The NOC ticket status or ticket number is not documented consistently.", unresolved_checks=("ticket_status",))
         if not facts.ticket_id:
             return Decision("RULE-3", "pending_missing_facts", reason="The NOC ticket number is required.", unresolved_checks=("ticket_id",))
+        if facts.independent_ticket_verification == Truth.FALSE:
+            return Decision(
+                "RULE-3", "needs_tier2_approval",
+                reason="The reported NOC ticket could not be independently verified.",
+                approval_reasons=("unverifiable_ticket",),
+            )
         if facts.service_address_match == Truth.FALSE:
-            return self._fallback_to_goodwill(facts, "The ticket does not cover the customer's service address.")
+            return self._fallback_to_goodwill(facts, "The ticket does not cover the customer's service address.", invoice_dispute=invoice_dispute)
         if facts.service_address_match == Truth.UNKNOWN:
             return Decision("RULE-3", "pending_missing_facts", reason="The ticket's service-address coverage is unknown.", unresolved_checks=("service_address_match",))
         duration = facts.outage_duration_hours
@@ -43,7 +53,11 @@ class PolicyEngine:
             return Decision("RULE-3", "pending_missing_facts", reason="The outage dates and duration are required.", unresolved_checks=("outage_start", "outage_end"))
         min_hours = Decimal(str(self.rules["RULE-3"]["minimum_duration_hours_exclusive"]))
         if duration <= min_hours:
-            return self._fallback_to_goodwill(facts, f"The outage lasted {duration} hours, which does not exceed the Rule 3 threshold of {min_hours} hours.")
+            return self._fallback_to_goodwill(
+                facts,
+                f"The outage lasted {duration} hours, which does not exceed the Rule 3 threshold of {min_hours} hours.",
+                invoice_dispute=invoice_dispute,
+            )
         if request_delta is None:
             return Decision("RULE-3", "pending_missing_facts", reason="The outage resolution date and request date are required.", unresolved_checks=("request_date", "outage_resolution_date"))
         if request_delta < 0:
@@ -51,7 +65,12 @@ class PolicyEngine:
         request_window = int(self.rules["RULE-3"]["request_window_calendar_days_inclusive"])
         deadline = facts.outage_end.date() + timedelta(days=request_window)
         if request_delta > request_window:
-            return self._fallback_to_goodwill(facts, f"The request is {request_delta} days after resolution, outside Rule 3's {request_window}-day window.", deadline=deadline)
+            return self._fallback_to_goodwill(
+                facts,
+                f"The request is {request_delta} days after resolution, outside Rule 3's {request_window}-day window.",
+                deadline=deadline,
+                invoice_dispute=invoice_dispute,
+            )
         if facts.monthly_recurring_charge is None:
             return Decision("RULE-3", "pending_missing_facts", reason="The current monthly recurring charge is required for the calculation.", deadline=deadline, unresolved_checks=("monthly_recurring_charge",))
         full_days = facts.full_outage_days or 0
@@ -77,13 +96,10 @@ class PolicyEngine:
             approval.append("outage_credit_above_300")
         if duration > max_hours:
             approval.append("outage_duration_above_30_days")
-        dispute = self.evaluate_dispute_window(facts)
-        if dispute.status == "needs_tier2_approval":
-            approval.extend(dispute.approval_reasons)
-        elif dispute.status == "pending_missing_facts":
-            unresolved.extend(dispute.unresolved_checks)
         self._review_repeat_dispute(facts, approval, unresolved)
         self._review_status(facts.fraud_indicator, "fraud_indicator", approval, unresolved)
+        if facts.ticket_status != TicketStatus.VERIFIED or facts.independent_ticket_verification != Truth.TRUE:
+            unresolved.append("independent_ticket_verification")
         if facts.account_verified != Truth.TRUE:
             unresolved.append("account_verification")
         if approval:
@@ -100,18 +116,21 @@ class PolicyEngine:
             unresolved_checks=tuple(dict.fromkeys(unresolved)), calculations=calculations,
         )
 
-    def evaluate_general_goodwill(self, facts: CaseFacts, requested_amount: Decimal | None = None) -> Decision:
+    def evaluate_general_goodwill(
+        self, facts: CaseFacts, requested_amount: Decimal | None = None,
+        invoice_dispute: Decision | None = None,
+    ) -> Decision:
+        """Evaluate Rule 2; pass a Rule 1 result only for an actual invoice dispute."""
         if facts.billing_error_confirmed == Truth.FALSE:
             return Decision("RULE-2", "ineligible", reason="Rule 2 requires a confirmed general billing error.")
         if facts.billing_error_confirmed == Truth.UNKNOWN:
             return Decision("RULE-2", "pending_missing_facts", reason="A confirmed billing error and remaining credit history are required before quoting a goodwill amount.", unresolved_checks=("billing_error_confirmed", "credit_history"))
-        dispute = self.evaluate_dispute_window(facts)
-        if dispute.status == "pending_missing_facts":
+        if invoice_dispute is not None and invoice_dispute.status == "pending_missing_facts":
             return Decision(
                 "RULE-2", "pending_missing_facts",
                 reason="Rule 1 timing cannot be assessed before considering general goodwill.",
-                unresolved_checks=tuple(dict.fromkeys(dispute.unresolved_checks)),
-                calculations={"rule1_status": dispute.status},
+                unresolved_checks=tuple(dict.fromkeys(invoice_dispute.unresolved_checks)),
+                calculations={"rule1_status": invoice_dispute.status},
             )
         if facts.request_date is None or facts.credit_history is None:
             return Decision("RULE-2", "pending_missing_facts", reason="The request date and account credit history are required to determine the rolling total.", unresolved_checks=("credit_history",))
@@ -127,9 +146,12 @@ class PolicyEngine:
         ceiling = Decimal(self.rules["RULE-2"]["cumulative_limit"])
         approval: list[str] = []
         unresolved: list[str] = []
-        if dispute.status == "needs_tier2_approval":
-            approval.extend(dispute.approval_reasons)
-        rule1_calculations = {"rule1_status": dispute.status, **dispute.calculations}
+        if invoice_dispute is not None and invoice_dispute.status == "needs_tier2_approval":
+            approval.extend(invoice_dispute.approval_reasons)
+        rule1_calculations = (
+            {"rule1_status": invoice_dispute.status, **invoice_dispute.calculations}
+            if invoice_dispute is not None else {}
+        )
         if proposed_total > ceiling:
             approval.append("general_goodwill_above_75")
         self._review_repeat_dispute(facts, approval, unresolved)
@@ -140,8 +162,11 @@ class PolicyEngine:
         reason = "A request beyond Rule 1's 60-day dispute window may only be considered with Tier 2 sign-off." if "late_dispute" in approval else "The general goodwill limit is cumulative and applies only when no more-specific policy governs."
         return Decision("RULE-2", status, amount, reason=reason, approval_reasons=tuple(dict.fromkeys(approval)), unresolved_checks=tuple(dict.fromkeys(unresolved)), calculations={"prior_general_credits": prior, "requested_amount": amount, "proposed_total": proposed_total, "limit": ceiling, **rule1_calculations})
 
-    def _fallback_to_goodwill(self, facts: CaseFacts, reason: str, deadline: date | None = None) -> Decision:
-        goodwill = self.evaluate_general_goodwill(facts)
+    def _fallback_to_goodwill(
+        self, facts: CaseFacts, reason: str, deadline: date | None = None,
+        invoice_dispute: Decision | None = None,
+    ) -> Decision:
+        goodwill = self.evaluate_general_goodwill(facts, invoice_dispute=invoice_dispute)
         return replace(goodwill, deadline=deadline, reason=reason + " " + goodwill.reason, exclusions=("Rule 3 conditions are not met; a separate confirmed Rule 2 billing error and credit-history review are still required.",))
 
     def _review_status(self, value: Truth, name: str, approval: list[str], unresolved: list[str]) -> None:

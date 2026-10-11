@@ -20,6 +20,29 @@ class ClaimDraft:
     derived_inputs: dict[str, Any] = field(default_factory=dict)
 
 
+def _strip_negated_issuance_claims(text: str) -> str:
+    verbs = r"(?:issued|posted|applied|credited|paid|approved|processed|refunded|reflected|sent|released|completed|received|delivered)"
+    return re.sub(
+        rf"\b(?:no|not|never)\s+(?:(?:service[- ]outage|outage|goodwill|account)\s+)*(?:credit|refund|payment)\s+(?:(?:has|have|had)\s+(?:ever\s+)?(?:already\s+)?(?:been\s+)?|(?:was|were|is|are)\s+|(?:already\s+|ever\s+)?){verbs}\b",
+        "",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+
+def _has_affirmative_issuance_claim(text: str) -> bool:
+    verbs = r"(?:issued|posted|applied|credited|paid|approved|processed|refunded|reflected|sent|released|completed|received|delivered)"
+    positive_text = _strip_negated_issuance_claims(text)
+    patterns = (
+        rf"\b(?:customer|account holder|account)\s+(?:(?:has|have|had|already|was|were|is|are|been)\s+)*(?:received|got|credited|issued|refunded|paid|processed|approved)\b",
+        rf"\b(?:we|an agent|billing)\s+(?:(?:has|have|had|already)\s+)*(?:issued|posted|applied|approved|credited|paid|processed|refunded|sent|released)\b",
+        rf"\b(?:the )?(?:credit|refund|payment)\s+(?:(?:has|have|had)\s+(?:already\s+)?(?:been\s+)?|(?:was|were|is|are)\s+|(?:already\s+|now\s+)?){verbs}\b",
+        r"\b(?:customer|account holder|account)\s+(?:will|shall|must|may|might|can|could)\s+(?:receive|get|be\s+(?:issued|credited|refunded|approved|paid))\b",
+        rf"\$\s*\d[\d,]*(?:\.\d+)?\s+(?:(?:has|have|had)\s+(?:already\s+)?(?:been\s+)?|(?:was|were|is|are)\s+|(?:already\s+|now\s+)?){verbs}\b",
+    )
+    return any(re.search(pattern, positive_text, re.IGNORECASE) for pattern in patterns)
+
+
 def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim:
     ids = tuple(dict.fromkeys(draft.support_ids))
     available = evidence.passages_for(ids) if isinstance(evidence, EvidenceLedger) else {}
@@ -49,7 +72,20 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
             kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower() if "KB-1004" in available else ""
             formula_pattern = r"monthly recurring charge\s*÷\s*30.*?full days"
             formula_supported = all(re.search(formula_pattern, source, re.DOTALL) for source in (rule3, kb4))
-            supported = formula_supported and claimed == recomputed and facts_supported and derived_days_match and duration > timedelta(hours=4)
+            money_tokens = re.findall(r"(?<!\w)(-?)\$\s*(\d[\d,]*(?:\.\d+)?)", draft.text)
+            rendered_amounts = {Decimal(sign + value.replace(",", "")) for sign, value in money_tokens}
+            precision_supported = all("." not in value or len(value.rsplit(".", 1)[1]) <= 2 for _, value in money_tokens)
+            amount_text_supported = (
+                bool(money_tokens) and precision_supported
+                and rendered_amounts == {recomputed}
+            )
+            promise_or_issuance = _has_affirmative_issuance_claim(draft.text)
+            calculation_language = bool(re.search(r"\b(?:calculat\w*|estimat\w*|provisional)\b", draft.text, re.IGNORECASE))
+            supported = (
+                formula_supported and claimed == recomputed and facts_supported and derived_days_match
+                and duration > timedelta(hours=4) and amount_text_supported
+                and calculation_language and not promise_or_issuance
+            )
         except (KeyError, InvalidOperation, ValueError, TypeError, OverflowError):
             supported = False
     elif draft.claim_type == "tax_recalculation_unknown":
@@ -57,7 +93,12 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
             kb3 = re.sub(r"[*_`]", "", available["KB-1003"].text).lower()
             kb4 = re.sub(r"[*_`]", "", available["KB-1004"].text).lower()
             claim = draft.text.lower()
-            supported = all(("taxes and surcharges" in kb3, "itemized separately" in kb3,
+            definite_text = re.sub(r"(?:do not say|does not say|does not specify|don't say|doesn't specify)\s+(?:whether|if)\b[^.;]*", "", claim)
+            definite_tax_claim = re.search(
+                r"\b(?:taxes|surcharges)\b[^.;]{0,80}\b(?:refund(?:ed)?|recalculat\w*|reduc(?:ed|tion)|return(?:ed)?)\b",
+                definite_text,
+            )
+            supported = definite_tax_claim is None and all(("taxes and surcharges" in kb3, "itemized separately" in kb3,
                              "recurring plan charge" in kb4, "not say" in claim or "does not specify" in claim,
                              "tax" in claim, "recalculat" not in kb3 + kb4))
         status = "partially_grounded" if supported else "unsupported"
@@ -163,7 +204,8 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
                 "fraud indicator" in claim,
                 "tier 2" in claim,
             ))
-            supported = bool(policy_supported and claim_supported)
+            false_75_gate = bool(re.search(r"(?:above|over|exceed(?:s|ing)?)\s+\$75.{0,80}(?:automatically|requires?|triggers?).{0,40}tier\s*2", claim))
+            supported = bool(policy_supported and claim_supported and not false_75_gate)
     elif draft.claim_type == "repeat_fraud_policy":
         required = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}
         if required.issubset(available):
@@ -233,31 +275,76 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
     elif draft.claim_type == "deadline":
         supported = {"RULE-3", "KB-1005"}.issubset(available) and bool(draft.derived_inputs.get("request_deadline"))
         deadline_value = str(draft.derived_inputs.get("request_deadline", ""))
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", deadline_value):
-            try:
-                resolution = date.fromisoformat(str(draft.derived_inputs["resolution_date"]))
-                request = date.fromisoformat(str(draft.derived_inputs["request_date"]))
-                deadline = date.fromisoformat(deadline_value)
-                policy = re.sub(r"[*_`]", "", available["RULE-3"].text)
-                window_match = re.search(r"within\s+(\d+)\s+calendar days", policy, re.IGNORECASE)
-                resolution_evidence = any(
-                    p.source_kind == "transcript" and p.passage_id.startswith("TRANSCRIPT-") and p.passage_id != "TRANSCRIPT-METADATA"
-                    and re.search(rf"\b{month_name[resolution.month]}\s+{resolution.day}(?:st|nd|rd|th)?\b", p.text, re.IGNORECASE)
-                    for p in available.values()
-                )
-                metadata = available.get("TRANSCRIPT-METADATA")
-                request_supported = metadata is not None and request.strftime("%B %d, %Y").replace(" 0", " ").lower() in metadata.text.lower()
-                supported = supported and resolution_evidence and request_supported and bool(window_match)
-                if window_match:
-                    supported = supported and deadline == resolution + timedelta(days=int(window_match.group(1)))
-                supported = supported and draft.derived_inputs.get("request_day_delta") == (request - resolution).days
-            except (KeyError, ValueError, OverflowError):
-                supported = False
+        policy = re.sub(r"[*_` ]", "", available.get("RULE-3").text).lower() if "RULE-3" in available else ""
+        kb5 = re.sub(r"[*_` ]", "", available.get("KB-1005").text).lower() if "KB-1005" in available else ""
+        rule_window = re.search(r"within(\d+)calendardays", policy)
+        kb_window = re.search(r"within(\d+)days", kb5)
+        source_window = int(rule_window.group(1)) if rule_window else None
+        kb_window_days = int(kb_window.group(1)) if kb_window else None
+        claim = re.sub(r"\s+", " ", draft.text).lower()
+        if source_window is None or kb_window_days != source_window:
+            supported = False
+        else:
+            window_phrase = f"within {source_window} calendar days"
+            supported = supported and window_phrase in claim
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", deadline_value):
+                try:
+                    resolution = date.fromisoformat(str(draft.derived_inputs["resolution_date"]))
+                    request = date.fromisoformat(str(draft.derived_inputs["request_date"]))
+                    deadline = date.fromisoformat(deadline_value)
+                    resolution_evidence = any(
+                        p.source_kind == "transcript" and p.passage_id.startswith("TRANSCRIPT-") and p.passage_id != "TRANSCRIPT-METADATA"
+                        and re.search(rf"\b{month_name[resolution.month]}\s+{resolution.day}(?:st|nd|rd|th)?\b", p.text, re.IGNORECASE)
+                        for p in available.values()
+                    )
+                    metadata = available.get("TRANSCRIPT-METADATA")
+                    request_supported = metadata is not None and request.strftime("%B %d, %Y").replace(" 0", " ").lower() in metadata.text.lower()
+                    def rendered_dates(text: str) -> set[date]:
+                        values: set[date] = set()
+                        pattern = r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b"
+                        for month, day, year in re.findall(pattern, text, re.IGNORECASE):
+                            try:
+                                values.add(datetime.strptime(f"{month} {day} {year}", "%B %d %Y").date())
+                            except ValueError:
+                                continue
+                        return values
+
+                    dates_supported = rendered_dates(draft.text) == {resolution, request, deadline}
+                    delta = (request - resolution).days
+                    negative_timing = bool(re.search(
+                        r"\b(?:not timely|isn't timely|wasn't timely|untimely|outside (?:the )?(?:documented )?window|beyond (?:the )?(?:documented )?window)\b",
+                        claim,
+                    ))
+                    uncertain_timing = bool(re.search(
+                        r"\b(?:unknown whether|unclear whether|can't tell whether|cannot tell whether|not sure whether|may or may not|might be|could be|possibly|perhaps)\b",
+                        claim,
+                    ))
+                    positive_timing = bool(re.search(r"\b(?:is|was|remains)\s+timely\b|\band\s+timely\b", claim)) and not negative_timing
+                    timing_supported = not uncertain_timing and ((0 <= delta <= source_window and positive_timing) or (not 0 <= delta <= source_window and negative_timing))
+                    elapsed_claims = {int(value) for value in re.findall(r"\b(\d+)\s+days?\s+(?:later|after|since)\b", claim)}
+                    supported = (
+                        supported and resolution_evidence and request_supported
+                        and deadline == resolution + timedelta(days=source_window)
+                        and draft.derived_inputs.get("request_day_delta") == delta
+                        and dates_supported and timing_supported
+                        and (not elapsed_claims or elapsed_claims == {delta})
+                    )
+                except (KeyError, ValueError, OverflowError):
+                    supported = False
+            else:
+                # Informational answers may state the policy window without case dates.
+                stated_windows = {int(value) for value in re.findall(r"\b(\d+)\s+calendar days\b", claim)}
+                supported = supported and stated_windows == {source_window}
     elif draft.claim_type == "account_check_pending":
         required = {"RULE-4", "RULE-5", "KB-1006", "KB-1007"}
         claim = draft.text.lower()
         pending_language = any(term in claim for term in ("not established", "does not determine", "unknown", "unconfirmed", "pending"))
-        supported = required.issubset(available) and pending_language
+        positive_text = _strip_negated_issuance_claims(claim)
+        affirmative_status = re.search(
+            r"\b(?!(?:no|not|never)\s+)(?:fraud|fraud indicator|repeat-dispute checks?)\s+(?:has been|was|is|are)\s+(?:clear|cleared|found)\b",
+            positive_text,
+        ) or _has_affirmative_issuance_claim(positive_text) or re.search(r"\bno fraud was found\b", claim)
+        supported = required.issubset(available) and pending_language and affirmative_status is None
         status = "requires_account_check" if supported else "unsupported"
     elif draft.claim_type == "ticket_approval_unknown":
         if {"RULE-4", "KB-1006"}.issubset(available):
@@ -266,7 +353,8 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
             claim = draft.text.lower()
             ticket_reported = any(p.source_kind == "transcript" and "ticket" in p.text.lower() for p in available.values())
             status_unknown = "does not establish credit approval" in claim or "authorization is not established" in claim
-            supported = "cannot be verified" in rule4 and "ticket can't be verified" in kb6 and status_unknown
+            affirmative_status = _has_affirmative_issuance_claim(claim)
+            supported = "cannot be verified" in rule4 and "ticket can't be verified" in kb6 and status_unknown and not affirmative_status
             if ticket_reported:
                 supported = supported and "out-" in " ".join(p.text.lower() for p in available.values() if p.source_kind == "transcript")
         status = "requires_account_check" if supported else "unsupported"
@@ -282,14 +370,31 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
             claim = draft.text.lower()
             claim_amounts = {Decimal(value) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", claim)}
             source_amounts = {Decimal(value) for source in (policy, kb) for value in re.findall(r"\$(\d+(?:\.\d{1,2})?)", source)}
+            per_incident = re.search(r"\b(?:per|each)[- ]incident\b", claim) is not None
+            explicitly_not_per_incident = re.search(r"\bnot\s+(?:a\s+)?per[- ]incident\b", claim) is not None
+            incident_scoped = per_incident and not explicitly_not_per_incident
             supported = (
                 "confirmed" in policy and "billing error" in policy and "rolling 12-month period" in policy
                 and "confirmed billing errors" in kb and "rolling 12-month period" in kb
+                and "account" in claim and ("cumulative" in claim or "total" in claim)
+                and not incident_scoped
                 and claim_amounts.issubset(source_amounts)
                 and ("tier 2" not in claim or "tier 2" in policy and "tier 2" in kb)
             )
     elif draft.claim_type == "billing_dispute_process":
-        supported = "KB-1001" in available
+        if "KB-1001" in available:
+            source = re.sub(r"[*_`]", "", available["KB-1001"].text).lower()
+            claim = draft.text.lower()
+            source_omits_document_checklist = not any(term in source for term in ("required documents", "supporting documents", "receipts required"))
+            supported = all((
+                source_omits_document_checklist,
+                "does not specify" in claim or "doesn't specify" in claim,
+                "supporting documents" in claim or "paperwork" in claim,
+                "confirm the account holder's identity" in source,
+                "date, amount, description" in source,
+                "date, amount, and description" in claim,
+                "billing" in claim,
+            ))
     elif draft.claim_type.startswith("kb:"):
         passage_id = draft.claim_type.removeprefix("kb:")
         passage = available.get(passage_id)
@@ -317,7 +422,23 @@ def validate_claim(draft: ClaimDraft, evidence: EvidenceLedger) -> MaterialClaim
                 supported = supported and ("prorat" not in claim or "prorat" in source)
                 supported = supported and ("formula" not in claim or "monthly charge ÷ 30" in source and "days active" in source)
                 if "outage" in claim:
-                    supported = supported and "unrelated to service-outage credits" in source and "kb-1004" in claim and "separate" in claim
+                    positive_authority = re.search(r"\b(?:authoriz\w*|allows?|permits?|approves?)\b", claim) is not None
+                    supported = supported and not positive_authority and "unrelated to service-outage credits" in source and "kb-1004" in claim and "separate" in claim
+    elif draft.claim_type == "device_deductible":
+        if "KB-1009" in available:
+            source = re.sub(r"[*_` ]", "", available["KB-1009"].text).lower()
+            claim = re.sub(r"[*_` ]", "", draft.text).lower()
+            supported = all((
+                "nimbusdeviceprotection" in source,
+                "deductible($25–$199dependingondevicetier)" in source,
+                "$25–$199" in draft.text,
+                "depending on device tier" in draft.text.lower(),
+            ))
+    elif draft.claim_type == "credit_issuance_status":
+        # Issuance is only supportable from a logged action record describing that
+        # account action. Policy and transcript text cannot prove it occurred.
+        action_records = [p for p in available.values() if p.source_kind == "action_record"]
+        supported = bool(action_records) and all(draft.text.casefold() in p.text.casefold() for p in action_records)
     elif draft.claim_type == "source_conflict":
         status = "partially_grounded" if len(available) >= 2 else "unsupported"
         supported = len(available) >= 2

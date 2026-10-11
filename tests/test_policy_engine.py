@@ -44,6 +44,63 @@ class PolicyEngineTests(unittest.TestCase):
         self.assertNotIn("goodwill_limit", " ".join(result.approval_reasons).lower())
         self.assertEqual(result.status, "eligible_for_frontline_action")
 
+    def test_standalone_outage_credit_does_not_require_invoice_facts(self):
+        result = self.engine.evaluate_service_outage(case(invoice_statement_date=None, disputed_item=None))
+        self.assertEqual(result.selected_rule_id, "RULE-3")
+        self.assertEqual(result.credit_amount, Decimal("82.50"))
+        self.assertEqual(result.status, "eligible_for_frontline_action")
+        self.assertNotIn("invoice_statement_date", result.unresolved_checks)
+
+    def test_old_invoice_not_being_disputed_does_not_block_outage_credit(self):
+        result = self.engine.evaluate_service_outage(case(
+            invoice_statement_date=date(2026, 1, 1), disputed_item=None,
+        ))
+        self.assertEqual(result.status, "eligible_for_frontline_action")
+        self.assertEqual(result.credit_amount, Decimal("82.50"))
+
+    def test_combined_late_invoice_dispute_blocks_rule_two_outage_fallback(self):
+        facts = case(
+            invoice_statement_date=date(2026, 7, 1),
+            outage_end=datetime(2026, 9, 10, 10),
+            billing_error_confirmed=Truth.TRUE,
+            requested_goodwill_amount=Decimal("25.00"),
+        )
+        invoice = self.engine.evaluate_invoice_dispute(facts)
+        outage_fallback = self.engine.evaluate_service_outage(facts, invoice_dispute=invoice)
+        self.assertEqual(invoice.status, "needs_tier2_approval")
+        self.assertEqual(outage_fallback.selected_rule_id, "RULE-2")
+        self.assertEqual(outage_fallback.status, "needs_tier2_approval")
+        self.assertIn("late_dispute", outage_fallback.approval_reasons)
+        self.assertFalse(outage_fallback.issuance_authorized)
+
+        standalone = self.engine.evaluate_service_outage(facts)
+        self.assertEqual(standalone.status, "eligible_for_frontline_action")
+
+    def test_ticket_verification_matrix_controls_issuance_authorization(self):
+        cases = (
+            ("agent report unknown", case(ticket_status=TicketStatus.AGENT_REPORTED, independent_ticket_verification=Truth.UNKNOWN), "calculated_pending_checks", False),
+            ("agent report contradicted by no verification state", case(ticket_status=TicketStatus.AGENT_REPORTED, independent_ticket_verification=Truth.TRUE), "calculated_pending_checks", False),
+            ("verified", case(ticket_status=TicketStatus.VERIFIED, independent_ticket_verification=Truth.TRUE), "eligible_for_frontline_action", True),
+            ("explicitly unverifiable", case(ticket_status=TicketStatus.UNVERIFIABLE, independent_ticket_verification=Truth.FALSE), "needs_tier2_approval", False),
+            ("verification says false", case(ticket_status=TicketStatus.VERIFIED, independent_ticket_verification=Truth.FALSE), "needs_tier2_approval", False),
+            ("verification unknown", case(ticket_status=TicketStatus.VERIFIED, independent_ticket_verification=Truth.UNKNOWN), "calculated_pending_checks", False),
+            ("zero provisional amount", case(outage_end=datetime(2026, 9, 10, 10, 1)), "eligible_for_frontline_action", False),
+            ("missing ticket", case(ticket_status=TicketStatus.MISSING, ticket_id=None), "pending_missing_facts", False),
+            ("wrong address", case(service_address_match=Truth.FALSE), "pending_missing_facts", False),
+            ("fraud unknown", case(fraud_indicator=Truth.UNKNOWN), "calculated_pending_checks", False),
+            ("fraud flagged", case(fraud_indicator=Truth.TRUE), "needs_tier2_approval", False),
+            ("recent resolved dispute", case(prior_resolved_dispute=Truth.TRUE, prior_resolved_dispute_date=date(2026, 7, 7)), "needs_tier2_approval", False),
+            ("prior dispute unknown", case(prior_resolved_dispute=Truth.UNKNOWN), "calculated_pending_checks", False),
+            ("all checks cleared", case(), "eligible_for_frontline_action", True),
+        )
+        for label, facts, expected_status, expected_authorized in cases:
+            with self.subTest(label=label):
+                result = self.engine.evaluate_service_outage(facts)
+                self.assertEqual(result.status, expected_status)
+                self.assertEqual(result.issuance_authorized, expected_authorized)
+                if label == "wrong address":
+                    self.assertEqual(result.selected_rule_id, "RULE-2")
+
     def test_exactly_four_hours_does_not_qualify(self):
         result = self.engine.evaluate_service_outage(case(outage_end=datetime(2026, 9, 10, 10)))
         self.assertNotEqual(result.selected_rule_id, "RULE-3")
@@ -80,7 +137,19 @@ class PolicyEngineTests(unittest.TestCase):
         day31 = self.engine.evaluate_service_outage(case(request_date=date(2026, 10, 22)))
         self.assertEqual(day30.deadline, date(2026, 10, 21))
         self.assertEqual(day30.selected_rule_id, "RULE-3")
-        self.assertNotEqual(day31.selected_rule_id, "RULE-3")
+        self.assertEqual(day31.selected_rule_id, "RULE-2")
+        self.assertNotEqual(day31.status, "eligible_for_frontline_action")
+
+    def test_rule_three_failure_requires_a_separate_rule_two_goodwill_check(self):
+        result = self.engine.evaluate_service_outage(case(
+            outage_end=datetime(2026, 9, 10, 10),
+            billing_error_confirmed=Truth.UNKNOWN,
+            credit_history=None,
+        ))
+        self.assertEqual(result.selected_rule_id, "RULE-2")
+        self.assertEqual(result.status, "pending_missing_facts")
+        self.assertIn("billing_error_confirmed", result.unresolved_checks)
+        self.assertFalse(result.issuance_authorized)
 
     def test_statement_day_60_is_in_window_and_day_61_needs_tier2(self):
         day60 = self.engine.evaluate_dispute_window(case(request_date=date(2026, 11, 30)))
@@ -143,6 +212,14 @@ class PolicyEngineTests(unittest.TestCase):
         self.assertEqual(exactly75.status, "eligible_for_frontline_action")
         self.assertEqual(over75.status, "needs_tier2_approval")
 
+    def test_standalone_goodwill_does_not_require_invoice_dispute_facts(self):
+        result = self.engine.evaluate_general_goodwill(
+            case(invoice_statement_date=None, disputed_item=None, billing_error_confirmed=Truth.TRUE),
+            Decimal("20.00"),
+        )
+        self.assertEqual(result.status, "eligible_for_frontline_action")
+        self.assertNotIn("rule1_status", result.calculations)
+
     def test_rolling_window_excludes_general_credits_older_than_twelve_calendar_months(self):
         stale = (CreditEntry(date(2025, 10, 4), Decimal("75.00"), "general_goodwill"),)
         result = self.engine.evaluate_general_goodwill(case(credit_history=stale, billing_error_confirmed=Truth.TRUE), Decimal("0.01"))
@@ -155,10 +232,12 @@ class PolicyEngineTests(unittest.TestCase):
         self.assertIn("credit_history", result.unresolved_checks)
 
     def test_late_confirmed_billing_error_cannot_bypass_dispute_rule(self):
-        result = self.engine.evaluate_general_goodwill(case(
+        facts = case(
             invoice_statement_date=date(2026, 7, 1), disputed_item="incorrect monthly charge",
             billing_error_confirmed=Truth.TRUE,
-        ), Decimal("25.00"))
+        )
+        invoice_decision = self.engine.evaluate_invoice_dispute(facts)
+        result = self.engine.evaluate_general_goodwill(facts, Decimal("25.00"), invoice_dispute=invoice_decision)
         self.assertEqual(result.status, "needs_tier2_approval")
         self.assertIn("late_dispute", result.approval_reasons)
         self.assertEqual(result.calculations["days_since_statement"], 96)

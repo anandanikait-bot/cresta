@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 from .evidence import EvidenceLedger
@@ -25,12 +25,13 @@ _ALLOWED = {
     "plan_change_proration": {"KB-1010"},
     "mixed_retention_outage": {"RULE-3", "KB-1004", "KB-1008"},
     "service_outage_policy": {"RULE-3", "RULE-4", "RULE-5", "KB-1004", "KB-1005", "KB-1006", "KB-1007", "KB-1010"},
+    "combined_dispute_and_outage": {"RULE-1", "RULE-3", "RULE-4", "RULE-5", "KB-1001", "KB-1002", "KB-1004", "KB-1005", "KB-1006", "KB-1007"},
     "repeat_fraud_policy": {"RULE-4", "RULE-5", "KB-1006", "KB-1007"},
     "ticket_status": {"RULE-4", "RULE-5", "KB-1006", "KB-1007"},
     "clarification": set(),
     "unknown": None,
 }
-_FINANCIAL_INTENTS = {"service_outage_amount", "outage_deadline", "tax_recalculation", "general_goodwill", "mixed_retention_outage", "service_outage_policy", "repeat_fraud_policy", "ticket_status"}
+_FINANCIAL_INTENTS = {"service_outage_amount", "outage_deadline", "tax_recalculation", "general_goodwill", "mixed_retention_outage", "service_outage_policy", "repeat_fraud_policy", "ticket_status", "combined_dispute_and_outage"}
 
 
 def _safe_question(value: str) -> str:
@@ -81,6 +82,7 @@ class BillingWorkflow:
 
         claims: list[MaterialClaim] = []
         provenance_notes: list[str] = []
+        additional_decisions: tuple[Decision, ...] = ()
         answer: str
         decision = Decision(None, "informational", reason="Informational answer; no account action is available in this prototype.")
         action = Action.ANSWER
@@ -142,8 +144,8 @@ class BillingWorkflow:
                 if facts.outage_start or facts.ticket_id:
                     provenance_notes.append("The outage facts are available only from the earlier transcript turns; later case facts were not added to earlier snapshots.")
             else:
-                claims.append(validate_claim(ClaimDraft("general_tax_itemization", "The supplied bill guide says applicable taxes and surcharges are itemized separately from the plan charge; it does not specify recalculation after a general refund.", ["KB-1003"])))
-                answer = "The bill guide says applicable taxes and regulatory surcharges are itemized separately from the plan charge. It does not specify whether they are recalculated after a general refund, so I can't infer that treatment; a billing specialist must confirm it."
+                claims.append(validate_claim(ClaimDraft("general_tax_itemization", "The supplied bill guide says applicable taxes and surcharges are itemized separately from the plan charge; it does not specify whether they are refunded or recalculated after a general billing adjustment.", ["KB-1003"])))
+                answer = "The bill guide says applicable taxes and regulatory surcharges are itemized separately from the plan charge. It does not specify whether they are refunded or recalculated after a general billing adjustment, so I can't infer that treatment; a billing specialist must confirm it."
             action = Action.ESCALATE
         elif intent == "outage_deadline":
             if facts.outage_end is not None and facts.request_date is not None:
@@ -152,7 +154,21 @@ class BillingWorkflow:
                 deadline = facts.outage_end.date() + timedelta(days=window)
                 timely = delta is not None and 0 <= delta <= window
                 decision = Decision("RULE-3", "eligible" if timely else "ineligible", deadline=deadline, reason="Request timing uses calendar dates from the outage resolution date.", calculations={"request_day_delta": delta, "deadline": deadline})
-                answer = f"A service-outage credit request is due within {window} calendar days after the outage is resolved. For the reported September 21, 2026 resolution, the deadline is October 21, 2026; this October 5 request is timely." if timely and deadline == date(2026, 10, 21) else f"A service-outage credit request is due within {window} calendar days after resolution. The calculated deadline is {deadline:%B %d, %Y}; the request is {'timely' if timely else 'outside the documented window'}."
+                resolution_date = facts.outage_end.date()
+                def fmt_date(value):
+                    return value.strftime("%B %d, %Y").replace(" 0", " ")
+
+                if timely:
+                    request_timing = f"The request dated {fmt_date(facts.request_date)} is {delta} days after resolution and timely."
+                elif delta is not None and delta < 0:
+                    request_timing = f"The request dated {fmt_date(facts.request_date)} precedes the reported resolution and is outside the documented window."
+                else:
+                    request_timing = f"The request dated {fmt_date(facts.request_date)} is {delta} days after resolution and outside the documented window."
+                answer = (
+                    f"A service-outage credit request is due within {window} calendar days after resolution. "
+                    f"For the reported {fmt_date(resolution_date)} resolution, the calculated deadline is {fmt_date(deadline)}. "
+                    f"{request_timing}"
+                )
                 delta = facts.request_days_after_resolution
                 resolution_source = facts.fact_provenance.get("outage_end", {}).get("timestamp")
                 deadline_sources = ["RULE-3", "KB-1005", *( [f"TRANSCRIPT-{resolution_source}"] if resolution_source else []), "TRANSCRIPT-METADATA"]
@@ -185,10 +201,8 @@ class BillingWorkflow:
             claims.append(validate_claim(ClaimDraft("account_check_pending", "This policy answer does not determine whether any condition applies to a specific account.", ["RULE-4", "RULE-5", "KB-1006", "KB-1007"])))
             if any(term in question.lower() for term in ("late", "goodwill")):
                 goodwill_text = "Rule 2 is limited to confirmed general billing errors and applies a cumulative $75 limit per rolling 12-month period; account credit history is needed to determine remaining allowance."
-                dispute_text = "A specific invoice charge may be disputed within 60 calendar days of the statement date; after that period, Tier 2 sign-off is required and resolution is not guaranteed."
-                answer += " A late outage request does not automatically qualify for general goodwill: Rule 2 requires a confirmed billing error outside a more-specific policy and a review of the account's credit history. If the charge dispute is also beyond Rule 1's 60-day window, Tier 2 sign-off is required and resolution is not guaranteed. These facts do not establish eligibility."
+                answer += " A late outage request does not automatically qualify for general goodwill: Rule 2 requires a confirmed billing error outside a more-specific policy and a review of the account's credit history. These facts do not establish eligibility."
                 claims.append(validate_claim(ClaimDraft("general_goodwill", goodwill_text, ["RULE-2", "KB-1002"])))
-                claims.append(validate_claim(ClaimDraft("dispute_policy", dispute_text, ["RULE-1", "KB-1001"])))
             if "kb-1010" in question.lower() or "plan change formula" in question.lower():
                 answer += " KB-1010 describes plan changes and does not govern outage-credit decisions; KB-1004 is the separate policy for service-outage credits."
                 claims.append(validate_claim(ClaimDraft("kb:KB-1010", "KB-1010 describes plan changes and does not govern outage-credit decisions; KB-1004 is the separate policy for service-outage credits.", ["KB-1010"])))
@@ -215,7 +229,7 @@ class BillingWorkflow:
             if ticket_stamp:
                 ticket_sources.append(f"TRANSCRIPT-{ticket_stamp}")
             reported_by_agent = (facts.ticket_status == TicketStatus.AGENT_REPORTED and bool(ticket_stamp)) or any(
-                term in question.lower() for term in ("agent said", "agent told me", "my agent reported", "ticket was confirmed")
+                term in question.lower() for term in ("agent said", "agent told me", "my agent reported", "ticket was confirmed", "agent confirmed", "agent found")
             )
             prefix = "A reported ticket status is not an account authorization record." if reported_by_agent else "I have no account-side approval record."
             answer = f"{prefix} Credit authorization remains unknown: I can't independently verify the NOC ticket or check the account-side decision; no credit issuance can be confirmed here. A billing specialist must review the account."
@@ -228,6 +242,82 @@ class BillingWorkflow:
                 claim_text,
                 ticket_sources,
             )))
+        elif intent == "combined_dispute_and_outage":
+            invoice_decision = self.engine.evaluate_invoice_dispute(facts)
+            outage_decision = self.engine.evaluate_service_outage(facts, invoice_dispute=invoice_decision)
+            decision = invoice_decision
+            additional_decisions = (outage_decision,)
+            invoice_window = int(self.rules["RULE-1"]["dispute_window_calendar_days"])
+            elapsed = invoice_decision.calculations.get("days_since_statement")
+            invoice_text = (
+                f"A specific invoice charge may be disputed within {invoice_window} calendar days of the statement date; "
+                f"after that period, Tier 2 sign-off is required and resolution is not guaranteed."
+            )
+            if elapsed is not None:
+                elapsed = int(elapsed)
+                qualifier = "within" if 0 <= elapsed <= invoice_window else "outside"
+                invoice_text = f"The {elapsed}-day interval is {qualifier} the policy window. " + invoice_text
+            invoice_sources = ["RULE-1", "KB-1001"]
+            dispute_stamp = facts.fact_provenance.get("disputed_item", {}).get("timestamp")
+            if dispute_stamp:
+                invoice_sources.append(f"TRANSCRIPT-{dispute_stamp}")
+            if facts.fact_provenance.get("request_date", {}).get("source_id") == "TRANSCRIPT-METADATA":
+                invoice_sources.append("TRANSCRIPT-METADATA")
+            claims.append(validate_claim(ClaimDraft("dispute_policy", invoice_text, invoice_sources, {"elapsed_days": elapsed})))
+            if invoice_decision.status == "eligible":
+                invoice_summary = "the invoice charge is within Rule 1's 60-calendar-day dispute window"
+            elif invoice_decision.status == "needs_tier2_approval":
+                invoice_summary = "the invoice dispute is beyond Rule 1's 60-calendar-day window, so Tier 2 may consider it but resolution is not guaranteed"
+            else:
+                invoice_summary = "Rule 1 timing for the invoice dispute is unresolved because the statement date or specific charge is missing"
+            distinction = (
+                "The Rule 1 billing dispute for the invoice charge is separate from a Rule 3 service-outage credit."
+            )
+            claims.append(validate_claim(ClaimDraft(
+                "dispute_vs_outage_credit", distinction,
+                ["RULE-1", "KB-1001", "RULE-3", "KB-1004"],
+            )))
+            outage_text = (
+                "Rule 3 requires a valid NOC outage ticket covering the service address and dates; the outage must last longer than 4 consecutive hours and the request must be made within 30 calendar days of resolution."
+            )
+            claims.append(validate_claim(ClaimDraft("outage_eligibility", outage_text, ["RULE-3", "KB-1004", "KB-1005"])))
+            summaries = ["Invoice dispute: " + invoice_summary + "."]
+            if outage_decision.selected_rule_id == "RULE-3" and outage_decision.credit_amount is not None:
+                facts_quote_ids = [facts.fact_provenance[k].get("timestamp") for k in ("monthly_recurring_charge", "outage_start", "ticket_id") if k in facts.fact_provenance]
+                turn_ids = [f"TRANSCRIPT-{stamp}" for stamp in facts_quote_ids]
+                amount = outage_decision.credit_amount
+                amount_claim = validate_claim(ClaimDraft("outage_amount", f"The calculated service-outage amount is ${amount:.2f}.", ["RULE-3", "KB-1004", *turn_ids], {
+                    "monthly_recurring_charge": str(facts.monthly_recurring_charge),
+                    "full_outage_days": facts.full_outage_days or 0,
+                    "amount": str(amount),
+                    "outage_start": facts.outage_start.isoformat() if facts.outage_start else None,
+                    "outage_end": facts.outage_end.isoformat() if facts.outage_end else None,
+                }))
+                claims.append(amount_claim)
+                summaries.append(f"Separate Rule 3 outage-credit calculation: ${amount:.2f}.")
+                if outage_decision.unresolved_checks:
+                    pending = ", ".join(outage_decision.unresolved_checks)
+                    summaries.append(f"This is provisional; required checks remain pending ({pending}), and no credit has been issued.")
+                    claims.append(validate_claim(ClaimDraft(
+                        "account_check_pending",
+                        "NOC ticket verification and account-level repeat-dispute and fraud checks remain unknown; no credit has been issued.",
+                        ["RULE-4", "RULE-5", "KB-1006", "KB-1007"],
+                    )))
+                elif outage_decision.status == "needs_tier2_approval":
+                    summaries.append("Tier 2 review is required before any Rule 3 issuance.")
+                else:
+                    summaries.append("The Rule 3 checks are clear for frontline consideration; the prototype still does not issue credits.")
+            else:
+                summaries.append("Separate Rule 3 assessment: " + outage_decision.reason)
+                if outage_decision.unresolved_checks:
+                    summaries.append("Missing or unknown outage facts: " + ", ".join(outage_decision.unresolved_checks) + ".")
+            answer = " ".join(summaries + [distinction, outage_text, "These are separate decisions; this prototype does not open a case or issue a credit."])
+            if any(result.status == "needs_tier2_approval" for result in (invoice_decision, outage_decision)):
+                action = Action.ESCALATE
+            elif any(result.status in {"pending_missing_facts", "calculated_pending_checks"} for result in (invoice_decision, outage_decision)):
+                action = Action.CLARIFY
+            else:
+                action = Action.ANSWER
         elif intent == "file_dispute":
             decision = Decision("RULE-1", "informational", reason="General filing guidance; no case was opened.")
             action = Action.ANSWER
@@ -238,11 +328,19 @@ class BillingWorkflow:
                 timing = f"The {elapsed}-day interval you gave is {'within the limit of' if 0 <= elapsed <= window else 'beyond the limit of'} {window} calendar days after the statement date, if counted from that date."
             else:
                 timing = f"A specific invoice charge may be disputed within {window} calendar days of the statement date."
-            answer = (
-                f"{timing} Identify the specific charge on the invoice (date, amount, and description). "
-                f"After {window} days, Tier 2 Billing Specialist sign-off is required and resolution is not guaranteed. "
-                "This prototype cannot open a case or determine any account-specific outcome."
-            )
+            asking_about_documents = any(term in question.lower() for term in ("document", "paperwork", "receipt", "proof"))
+            if asking_about_documents:
+                answer = (
+                    "The supplied guide does not specify required supporting documents. It says Billing should confirm the account holder's identity "
+                    "and identify the exact invoice charge by date, amount, and description. Please confirm with Billing whether additional paperwork is needed."
+                )
+                claims.append(validate_claim(ClaimDraft("billing_dispute_process", answer, ["KB-1001"])))
+            else:
+                answer = (
+                    f"{timing} Identify the specific charge on the invoice (date, amount, and description). "
+                    f"After {window} days, Tier 2 Billing Specialist sign-off is required and resolution is not guaranteed. "
+                    "This prototype cannot open a case or determine any account-specific outcome."
+                )
             policy_claim = (
                 f"A specific invoice charge may be disputed within {window} calendar days of the statement date; "
                 f"after that period, Tier 2 sign-off is required and resolution is not guaranteed."
@@ -279,9 +377,13 @@ class BillingWorkflow:
             else:
                 device_source = ledger.fetch_exact("KB-1009", reason="extract Device Protection deductible and claim limits")
                 source_text = device_source.text if device_source else ""
-                body = "\n".join(line for line in source_text.splitlines() if not line.startswith("### ") and not line.startswith("**Category:**")).strip()
-                answer = body or "The Device Protection article is unavailable in the supplied evidence."
-                claims.append(validate_claim(ClaimDraft("kb_quote", body, ["KB-1009"])))
+                if "deductible" in question.lower():
+                    answer = "The deductible is $25–$199 depending on device tier."
+                    claims.append(validate_claim(ClaimDraft("device_deductible", answer, ["KB-1009"])))
+                else:
+                    body = "\n".join(line for line in source_text.splitlines() if not line.startswith("### ") and not line.startswith("**Category:**")).strip()
+                    answer = body or "The Device Protection article is unavailable in the supplied evidence."
+                    claims.append(validate_claim(ClaimDraft("kb_quote", body, ["KB-1009"])))
         elif intent == "plan_change_proration":
             answer = "The knowledge base says mid-cycle plan changes prorate old and new recurring charges by active days using monthly charge ÷ 30 × days active. That rule is for plan changes; KB-1004 describes the separate service-outage policy, which requires NOC confirmation."
             claims.append(validate_claim(ClaimDraft("kb:KB-1010", answer, ["KB-1010"])))
@@ -313,12 +415,16 @@ class BillingWorkflow:
         # Refuse to render any affirmative template claim that fails semantic validation.
         if any(claim.status == "unsupported" for claim in claims) and intent != "unknown":
             action = Action.ESCALATE
-            answer = "The supplied sources do not adequately support this answer. I won't guess; please have a billing specialist verify it."
+            supported_claims = [claim.text for claim in claims if claim.status in {"grounded", "partially_grounded", "requires_account_check"}]
+            if supported_claims:
+                answer = " ".join(supported_claims) + " The supplied sources do not adequately support the remaining details; please have a billing specialist verify them."
+            else:
+                answer = "The supplied sources do not adequately support this answer. I won't guess; please have a billing specialist verify it."
 
         return TurnTrace(
             timestamp, _safe_question(question), intent, "offline deterministic", facts.to_public_dict(), tuple(candidates),
             decision, tuple(claims), action, answer, tuple(provenance_notes),
-            tuple(record.to_dict() for record in ledger.records),
+            tuple(record.to_dict() for record in ledger.records), additional_decisions,
         )
 
     def _extract_supported_fact(self, question: str, ledger: EvidenceLedger) -> tuple[str, str] | None:
